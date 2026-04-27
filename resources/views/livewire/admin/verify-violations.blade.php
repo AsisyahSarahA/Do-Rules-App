@@ -13,6 +13,7 @@
             </div>
         </div>
 
+
         {{-- TABLE --}}
         <div class="bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden">
 
