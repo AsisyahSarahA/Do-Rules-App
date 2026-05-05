@@ -5,10 +5,11 @@
             <p class="text-sm text-gray-500 font-medium">Kelola data ruang kelas, wali kelas, dan tahun ajaran aktif.</p>
         </div>
         <div class="flex items-center gap-3">
-            <button wire:click="$toggle('showForm')" 
-                class="bg-emerald-500 hover:bg-emerald-800 text-white text-sm font-semibold px-6 py-2.5 rounded-full flex items-center gap-2 transition-all shadow-md active:scale-95">
+            <button wire:click="$toggle('showForm')"
+                class="bg-teal-500 hover:bg-teal-800 text-white text-sm font-semibold px-6 py-2.5 rounded-full flex items-center gap-2 transition-all shadow-md active:scale-95">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $showForm ? 'M20 12H4' : 'M12 4v16m8-8H4' }}"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="{{ $showForm ? 'M20 12H4' : 'M12 4v16m8-8H4' }}"></path>
                 </svg>
                 {{ $showForm ? 'Tutup Form' : 'Tambah Kelas' }}
             </button>
@@ -16,44 +17,53 @@
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        @if($showForm)
-        <div class="lg:col-span-4 animate-in fade-in slide-in-from-left-4 duration-300">
-            <div class="bg-white border border-gray-100 rounded-[2rem] p-8 shadow-sm sticky top-8">
-                <h3 class="text-lg font-bold text-slate-800 mb-6">{{ $isEdit ? 'Update Kelas' : 'Input Kelas Baru' }}</h3>
-                
-                <form wire:submit.prevent="save" class="space-y-5">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Nama Kelas</label>
-                        <input wire:model="name" type="text" placeholder="Misal: XI RPL 1" 
-                            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-emerald-900/10 rounded-2xl text-sm transition-all">
-                    </div>
+        @if ($showForm)
+            <div class="lg:col-span-4 animate-in fade-in slide-in-from-left-4 duration-300">
+                <div class="bg-white border border-gray-100 rounded-[2rem] p-8 shadow-sm sticky top-8">
+                    <h3 class="text-lg font-bold text-slate-800 mb-6">
+                        {{ $isEdit ? 'Update Kelas' : 'Input Kelas Baru' }}</h3>
 
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Wali Kelas</label>
-                        <select wire:model="wali_kelas_id" 
-                            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-emerald-900/10 rounded-2xl text-sm transition-all appearance-none">
-                            <option value="">Pilih Guru...</option>
-                            @foreach($teachers as $teacher)
-                                <option value="{{ $class->wali_kelas->name ?? '-' }}">{{ $teacher->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                    <form wire:submit.prevent="save" class="space-y-5">
+                        <div>
+                            <label
+                                class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Nama
+                                Kelas</label>
+                            <input wire:model="name" type="text" placeholder="Misal: XI RPL 1"
+                                class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all">
+                        </div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Tahun Ajaran</label>
-                        <input wire:model="school_year" type="number" placeholder="2024" 
-                            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-emerald-900/10 rounded-2xl text-sm transition-all">
-                    </div>
+                        <div>
+                            <label
+                                class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Wali
+                                Kelas</label>
+                            <select wire:model="wali_kelas_id"
+                                class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all appearance-none">
+                                <option value="">Pilih Guru...</option>
+                                @foreach ($teachers as $teacher)
+                                    <option value="{{ $teacher->id }}">
+                                        {{ $teacher->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
 
-                    <div class="pt-2">
-                        <button type="submit" 
-                            class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-emerald-500/20">
-                            {{ $isEdit ? 'Simpan Perubahan' : 'Daftarkan Kelas' }}
-                        </button>
-                    </div>
-                </form>
+                        <div>
+                            <label
+                                class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Tahun
+                                Ajaran</label>
+                            <input wire:model="school_year" type="number" placeholder="2024"
+                                class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all">
+                        </div>
+
+                        <div class="pt-2">
+                            <button type="submit"
+                                class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-teal-500/20">
+                                {{ $isEdit ? 'Simpan Perubahan' : 'Daftarkan Kelas' }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
-        </div>
         @endif
 
         <div class="{{ $showForm ? 'lg:col-span-8' : 'lg:col-span-12' }} transition-all duration-300">
@@ -61,10 +71,12 @@
                 <div class="p-6 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-center gap-4">
                     <div class="relative w-full sm:w-64">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
                         </span>
-                        <input wire:model.live="search" type="text" placeholder="Cari kelas..." 
-                            class="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-full text-sm focus:ring-2 focus:ring-emerald-900/10">
+                        <input wire:model.live="search" type="text" placeholder="Cari kelas..."
+                            class="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-full text-sm focus:ring-2 focus:ring-teal-900/10">
                     </div>
                 </div>
 
@@ -80,46 +92,65 @@
                         </thead>
                         <tbody class="divide-y divide-gray-50">
                             @forelse($classes as $class)
-                            <tr class="group hover:bg-gray-50/50 transition-all">
-                                <td class="px-8 py-5">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
-                                            {{ substr($class->name, 0, 2) }}
+                                <tr class="group hover:bg-gray-50/50 transition-all">
+                                    <td class="px-8 py-5">
+                                        <div class="flex items-center gap-3">
+                                            <div
+                                                class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold">
+                                                {{ substr($class->name, 0, 2) }}
+                                            </div>
+                                            <span class="font-bold text-slate-700">{{ $class->name }}</span>
                                         </div>
-                                        <span class="font-bold text-slate-700">{{ $class->name }}</span>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5 text-sm text-gray-600">
-                                    <div class="flex flex-col">
-                                        <span class="font-semibold text-slate-700">{{ $class->wali_kelas->name ?? '-' }}</span>
-                                        <span class="text-[10px] text-gray-400">NIP: {{ $class->wali_kelas->id ?? '-' }}</span>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5">
-                                    <span class="px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-xs font-bold">
-                                        {{ $class->school_year }}
-                                    </span>
-                                </td>
-                                <td class="px-8 py-5 text-center">
-                                    <div class="flex justify-center gap-2">
-                                        <button wire:click="edit({{ $class->id }})" class="p-2 text-blue-600 hover:text-blue-600 hover:bg-blue-200 rounded-lg transition-all">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M18.364 5.364a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.364-9.364z"></path></svg>
-                                        </button>
-                                        <button onclick="confirm('Hapus kelas ini?') || event.stopImmediatePropagation()" wire:click="delete({{ $class->id }})" class="p-2 text-rose-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
+                                    </td>
+                                    <td class="px-8 py-5 text-sm text-gray-600">
+                                        <div class="flex flex-col">
+                                            <span
+                                                class="font-semibold text-slate-700">{{ $class->wali_kelas->name ?? '-' }}</span>
+                                            <span class="text-[10px] text-gray-400">NIP:
+                                                {{ $class->wali_kelas->id ?? '-' }}</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-8 py-5">
+                                        <span
+                                            class="px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-xs font-bold">
+                                            {{ $class->school_year }}
+                                        </span>
+                                    </td>
+                                    <td class="px-8 py-5 text-center">
+                                        <div class="flex justify-center gap-2">
+                                            <button wire:click="edit({{ $class->id }})"
+                                                class="p-2 text-blue-600 hover:text-blue-600 hover:bg-blue-200 rounded-lg transition-all">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path
+                                                        d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M18.364 5.364a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.364-9.364z">
+                                                    </path>
+                                                </svg>
+                                            </button>
+                                            <button
+                                                onclick="confirm('Hapus kelas ini?') || event.stopImmediatePropagation()"
+                                                wire:click="delete({{ $class->id }})"
+                                                class="p-2 text-rose-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor"
+                                                    viewBox="0 0 24 24">
+                                                    <path
+                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                    </path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
                             @empty
-                            <tr>
-                                <td colspan="4" class="px-8 py-20 text-center text-gray-400 italic">Belum ada data kelas.</td>
-                            </tr>
+                                <tr>
+                                    <td colspan="4" class="px-8 py-20 text-center text-gray-400 italic">Belum ada
+                                        data kelas.</td>
+                                </tr>
                             @endforelse
                         </tbody>
                     </table>
                 </div>
-                
+
                 <div class="p-8 bg-gray-50/30">
                     {{ $classes->links() }}
                 </div>

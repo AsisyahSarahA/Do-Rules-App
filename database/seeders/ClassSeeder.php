@@ -16,6 +16,7 @@ class ClassSeeder extends Seeder
     public function run(): void
     {
         ClassRoom::create([
+            'id' => 1,
             'name' => 'X RPL 1',
             'wali_kelas_id' => 2,
             'school_year' => 2026

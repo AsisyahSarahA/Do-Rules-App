@@ -1,96 +1,134 @@
 <div class="p-6 lg:p-10 bg-[#FAFBFC] min-h-screen">
-
-    <!-- HEADER -->
-    <div class="flex justify-between items-center mb-8">
+    <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
         <div>
-            <h2 class="text-3xl font-bold text-slate-800">Manajemen Guru</h2>
-            <p class="text-sm text-gray-500">Kelola data guru & wali kelas</p>
+            <h2 class="text-3xl font-bold text-slate-800 tracking-tight mb-1">Manajemen Guru</h2>
+            <p class="text-sm text-gray-500 font-medium">Kelola data tenaga pengajar, perbarui jabatan, dan kelola akun.</p>
         </div>
-
-        <button wire:click="$toggle('showForm')"
-            class="bg-emerald-500 text-white px-5 py-2 rounded-full text-sm font-semibold">
-            {{ $showForm ? 'Tutup' : 'Tambah Guru' }}
-        </button>
+        <div class="flex items-center gap-3">
+            <button wire:click="$toggle('showForm')" 
+                class="bg-teal-500 hover:bg-teal-800 text-white text-sm font-semibold px-6 py-2.5 rounded-full flex items-center gap-2 transition-all shadow-md active:scale-95">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $showForm ? 'M20 12H4' : 'M12 4v16m8-8H4' }}"></path>
+                </svg>
+                {{ $showForm ? 'Tutup Form' : 'Tambah Guru' }}
+            </button>
+        </div>
     </div>
 
-    <!-- NOTIF -->
     @if(session()->has('message'))
-        <div class="mb-4 bg-emerald-100 text-emerald-700 px-4 py-2 rounded-lg">
-            {{ session('message') }}
+        <div class="mb-6 animate-in fade-in slide-in-from-top-4 duration-300">
+            <div class="bg-teal-50 border border-teal-100 text-teal-700 px-6 py-4 rounded-2xl flex items-center gap-3 shadow-sm">
+                <svg class="w-5 h-5 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span class="font-semibold text-sm">{{ session('message') }}</span>
+            </div>
         </div>
     @endif
 
-    <div class="grid lg:grid-cols-12 gap-6">
-
-        <!-- FORM -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
         @if($showForm)
-        <div class="lg:col-span-4">
-            <div class="bg-white p-6 rounded-2xl shadow-sm">
-                <h3 class="font-bold mb-4">
-                    {{ $isEdit ? 'Edit Guru' : 'Tambah Guru' }}
-                </h3>
+        <div class="lg:col-span-4 animate-in fade-in slide-in-from-left-4 duration-300">
+            <div class="bg-white border border-gray-100 rounded-[2rem] p-8 shadow-sm sticky top-8">
+                <h3 class="text-lg font-bold text-slate-800 mb-6">{{ $isEdit ? 'Update Data Akun' : 'Input Guru Baru' }}</h3>
+                
+                <form wire:submit.prevent="save" class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Nama Lengkap</label>
+                        <input wire:model="name" type="text" placeholder="Misal: Dr. H. Ahmad Fauzi" 
+                            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all">
+                    </div>
 
-                <form wire:submit.prevent="save" class="space-y-4">
-                    <input wire:model="name" type="text" placeholder="Nama Guru"
-                        class="w-full p-3 rounded-xl bg-gray-50">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Email Sekolah</label>
+                        <input wire:model="email" type="email" placeholder="guru@sekolah.sch.id" 
+                            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all">
+                    </div>
 
-                    <input wire:model="nip" type="text" placeholder="NIP"
-                        class="w-full p-3 rounded-xl bg-gray-50">
-
-                    <button class="w-full bg-emerald-500 text-white py-3 rounded-xl">
-                        Simpan
-                    </button>
+                    <div class="pt-2">
+                        <button type="submit" 
+                            class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-teal-500/20">
+                            {{ $isEdit ? 'Simpan Perubahan' : 'Daftarkan Akun' }}
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
         @endif
 
-        <!-- TABLE -->
-        <div class="{{ $showForm ? 'lg:col-span-8' : 'lg:col-span-12' }}">
-            <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
-
-                <!-- SEARCH -->
-                <div class="p-4">
-                    <input wire:model.live="search" type="text"
-                        placeholder="Cari guru..."
-                        class="w-full p-2 rounded-full bg-gray-50">
+        <div class="{{ $showForm ? 'lg:col-span-8' : 'lg:col-span-12' }} transition-all duration-300">
+            <div class="bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden">
+                <div class="p-6 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div class="relative w-full sm:w-64">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                        </span>
+                        <input wire:model.live="search" type="text" placeholder="Cari guru..." 
+                            class="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-full text-sm focus:ring-2 focus:ring-teal-900/10">
+                    </div>
                 </div>
 
-                <table class="w-full">
-                    <thead class="bg-gray-50 text-xs text-gray-400 uppercase">
-                        <tr>
-                            <th class="p-4 text-left">Nama</th>
-                            <th class="p-4 text-left">NIP</th>
-                            <th class="p-4 text-center">Aksi</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        @forelse($teachers as $t)
-                        <tr class="border-t">
-                            <td class="p-4 font-semibold">{{ $t->name }}</td>
-                            <td class="p-4 text-gray-500">{{ $t->nip }}</td>
-
-                            <td class="p-4 text-center space-x-2">
-                                <button wire:click="edit({{ $t->id }})"
-                                    class="text-blue-500">Edit</button>
-
-                                <button wire:click="delete({{ $t->id }})"
-                                    class="text-red-500">Hapus</button>
-                            </td>
-                        </tr>
-                        @empty
-                        <tr>
-                            <td colspan="3" class="p-6 text-center text-gray-400">
-                                Belum ada data guru
-                            </td>
-                        </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] bg-gray-50/50">
+                                <th class="px-8 py-5">Guru</th>
+                                <th class="px-8 py-5">Email / ID</th>
+                                <th class="px-8 py-5">Jabatan (Role)</th>
+                                <th class="px-8 py-5 text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-50">
+                            @forelse($teachers as $teacher)
+                            <tr class="group hover:bg-gray-50/50 transition-all">
+                                <td class="px-8 py-5">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold text-xs transition-transform group-hover:scale-110">
+                                            {{ strtoupper(substr($teacher->name, 0, 1)) }}
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span class="font-bold text-slate-700 leading-tight group-hover:text-teal-600 transition-colors">{{ $teacher->name }}</span>
+                                            <span class="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-semibold">User Account</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-5 text-sm text-gray-600 font-medium">
+                                    <div class="flex flex-col">
+                                        <span>{{ $teacher->email }}</span>
+                                        <span class="text-[10px] text-gray-400">ID: #{{ $teacher->id }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-5">
+                                    <div class="relative max-w-[160px]">
+                                        <select wire:change="setRole({{ $teacher->id }}, $event.target.value)" 
+                                            class="w-full text-[10px] font-bold uppercase tracking-wider bg-gray-50 border border-gray-100 rounded-full px-4 py-2.5 focus:ring-2 focus:ring-teal-500/20 transition-all appearance-none cursor-pointer hover:bg-white text-slate-600">
+                                            <option value="guru" {{ $teacher->role == 'guru' ? 'selected' : '' }}>👨‍🏫 Guru</option>
+                                            <option value="wali_kelas" {{ $teacher->role == 'wali_kelas' ? 'selected' : '' }}>📋 Wali Kelas</option>
+                                            <option value="piket" {{ $teacher->role == 'piket' ? 'selected' : '' }}>🛡️ Piket</option>
+                                        </select>
+                                        <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none text-gray-400">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-5 text-center">
+                                    <div class="flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                        <button wire:click="edit({{ $teacher->id }})" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Edit User">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M18.364 5.364a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.364-9.364z"></path></svg>
+                                        </button>
+                                        <button onclick="confirm('Hapus user ini?') || event.stopImmediatePropagation()" wire:click="delete({{ $teacher->id }})" class="p-2 text-rose-400 hover:bg-rose-50 rounded-lg transition-all" title="Hapus User">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="4" class="px-8 py-20 text-center text-gray-400 italic">Belum ada data user.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
-
     </div>
 </div>

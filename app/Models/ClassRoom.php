@@ -9,6 +9,12 @@ class ClassRoom extends Model
 {
     protected $table = 'classes';
 
+    protected $fillable = [ // ✅ WAJIB
+        'name',
+        'wali_kelas_id',
+        'school_year'
+    ];
+
     public function students()
     {
         return $this->hasMany(Student::class);
@@ -19,3 +25,4 @@ class ClassRoom extends Model
         return $this->belongsTo(User::class, 'wali_kelas_id')->withDefault();
     }
 }
+

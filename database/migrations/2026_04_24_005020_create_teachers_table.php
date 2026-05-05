@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('teachers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->bigInteger('nip');
-            $table->string('name_teachers');
-            $table->enum('status', ["aktif","purnabakti","tidak_aktif"]);
+            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->bigInteger('nip')->unique();
+            $table->string('name');
+            $table->string('phone')->nullable();
+            $table->string('email')->nullable();
+            $table->enum('status', ["aktif","purnabakti","tidak_aktif"])->default('aktif');
             $table->timestamps();
         });
     }

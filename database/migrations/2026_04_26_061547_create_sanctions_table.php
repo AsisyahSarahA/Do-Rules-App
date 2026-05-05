@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('sanctions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('violation_id')->constrained();
-            $table->foreignId('given_by')->constrained('users');
-            $table->text('description');
-            $table->date('deadline')->nullable();
+            $table->integer('min_point');
+            $table->integer('max_point');
+            $table->string('action');
             $table->timestamps();
         });
     }

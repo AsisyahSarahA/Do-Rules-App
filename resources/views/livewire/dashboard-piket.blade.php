@@ -41,7 +41,7 @@ new class extends Component {
                         <td class="p-4 text-slate-700 text-sm">Pak Ahmad</td>
                         <td class="p-4 text-center">
                             <button
-                                class="bg-emerald-500 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-emerald-600 transition">Approve</button>
+                                class="bg-teal-500 text-white px-4 py-1.5 rounded-lg text-sm hover:bg-teal-600 transition">Approve</button>
                             <button class="text-rose-500 px-4 py-1.5 text-sm font-medium">Tolak</button>
                         </td>
                     </tr>

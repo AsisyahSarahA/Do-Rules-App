@@ -285,7 +285,7 @@
                                 </div>
                             </div>
                             <span
-                                class="text-[10px] font-bold text-donezo-accent bg-emerald-50 px-2 py-1 rounded">Completed</span>
+                                class="text-[10px] font-bold text-donezo-accent bg-teal-50 px-2 py-1 rounded">Completed</span>
                         </div>
 
                         <div class="flex items-center justify-between">

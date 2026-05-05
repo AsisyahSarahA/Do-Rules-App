@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             RuleSeeder::class,
             ViolationSeeder::class,
             SanctionSeeder::class,
+            TeacherSeeder::class,
         ]);
     }
 }

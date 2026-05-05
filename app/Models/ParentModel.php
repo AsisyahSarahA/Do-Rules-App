@@ -9,14 +9,14 @@ class ParentModel extends Model
     protected $table = 'parents';
 
     protected $fillable = [
-        'student_id',
-        'name_parent',
+        'name',
         'phone',
+        'email',
         'address'
     ];
 
-    public function student()
+    public function students()
     {
-        return $this->belongsTo(Student::class);
+        return $this->hasMany(Student::class, 'parent_id');
     }
 }

@@ -16,7 +16,8 @@ class StudentSeeder extends Seeder
     public function run(): void
     {
         Student::create([
-            'user_id' => 2,
+            // 'user_id' => 2,
+            'name' => 'Budi',
             'nis' => '12345',
             'class_id' => 1,
             'total_points' => 0

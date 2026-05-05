@@ -39,20 +39,23 @@
                     </div>
                     <svg class="w-4 h-4 transition-transform duration-200" :class="{'rotate-180': masterOpen}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                 </button>
-                
+
                 <!-- Dropdown Content -->
                 <div x-show="masterOpen" x-collapse class="mt-1 space-y-1 pl-11 pr-2">
-                    <a href="{{ route('admin.manage-classes') }}" class="block px-3 py-2 text-sm rounded-lg {{ request()->routeIs('admin.manage-classes') ? 'text-donezo-primary font-bold bg-emerald-50' : 'text-gray-500 hover:text-donezo-text hover:bg-gray-50' }} transition-colors">
-                        Manajemen Kelas
+                    <a href="{{ route('admin.manage-classes') }}" class="block px-3 py-2 text-sm rounded-lg {{ request()->routeIs('admin.manage-classes') ? 'text-donezo-primary font-bold bg-teal-50' : 'text-gray-500 hover:text-donezo-text hover:bg-gray-50' }} transition-colors">
+                        Data Kelas
                     </a>
-                    <a href="{{ route('admin.rules') }}" class="block px-3 py-2 text-sm rounded-lg {{ request()->routeIs('admin.rules') ? 'text-donezo-primary font-bold bg-emerald-50' : 'text-gray-500 hover:text-donezo-text hover:bg-gray-50' }} transition-colors">
-                        Peraturan & Poin
+                    <a href="{{ route('admin.rules') }}" class="block px-3 py-2 text-sm rounded-lg {{ request()->routeIs('admin.rules') ? 'text-donezo-primary font-bold bg-teal-50' : 'text-gray-500 hover:text-donezo-text hover:bg-gray-50' }} transition-colors">
+                        Data Peraturan
                     </a>
-                    <a href="#" class="block px-3 py-2 text-sm rounded-lg text-gray-500 hover:text-donezo-text hover:bg-gray-50 transition-colors">
+                    <a href="{{ route('admin.students') }}" class="block px-3 py-2 text-sm rounded-lg text-gray-500 hover:text-donezo-text hover:bg-gray-50 transition-colors">
                         Data Siswa
                     </a>
-                    <a href="#" class="block px-3 py-2 text-sm rounded-lg text-gray-500 hover:text-donezo-text hover:bg-gray-50 transition-colors">
+                    <a href="{{ route('admin.teachers')}}" class="block px-3 py-2 text-sm rounded-lg text-gray-500 hover:text-donezo-text hover:bg-gray-50 transition-colors">
                         Data Guru
+                    </a>
+                    <a href="{{ route('admin.parents')}}" class="block px-3 py-2 text-sm rounded-lg text-gray-500 hover:text-donezo-text hover:bg-gray-50 transition-colors">
+                        Data Orang Tua
                     </a>
                 </div>
             </div>
@@ -104,7 +107,7 @@
                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                 <span>Settings</span>
             </a>
-            
+
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
                 <button type="submit" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-rose-500 font-medium hover:text-rose-600 hover:bg-rose-50 transition-colors w-full text-left">
@@ -123,13 +126,13 @@
                 <path d="M0,100 Q30,50 100,80 L100,100 Z" fill="#3ebd7e" />
                 <path d="M0,100 Q50,20 100,60 L100,100 Z" fill="#175e3a" opacity="0.5" />
             </svg>
-            
-            <div class="relative z-10 w-10 h-10 rounded-full bg-emerald-500/30 border border-emerald-400/50 flex items-center justify-center font-bold text-lg">
+
+            <div class="relative z-10 w-10 h-10 rounded-full bg-teal-500/30 border border-teal-400/50 flex items-center justify-center font-bold text-lg">
                 {{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}
             </div>
             <div class="relative z-10 flex-1 overflow-hidden">
                 <h4 class="font-bold text-sm truncate">{{ auth()->user()->name ?? 'Administrator' }}</h4>
-                <p class="text-[10px] text-emerald-200 uppercase tracking-widest">{{ $role }}</p>
+                <p class="text-[10px] text-teal-200 uppercase tracking-widest">{{ $role }}</p>
             </div>
         </div>
     </div>

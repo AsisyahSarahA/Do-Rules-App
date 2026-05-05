@@ -15,6 +15,7 @@ class ManageStudents extends Component
     public $name, $nis, $class_room_id, $parent_id, $studentId;
     public $search = '';
     public $isEdit = false;
+    public $showForm = false;
 
     public function save()
     {
@@ -35,6 +36,7 @@ class ManageStudents extends Component
         );
 
         $this->resetForm();
+        $this->showForm = false;
     }
 
     public function edit($id)
@@ -48,6 +50,7 @@ class ManageStudents extends Component
         $this->parent_id = $student->parent_id;
 
         $this->isEdit = true;
+        $this->showForm = true;
     }
 
     public function delete($id)

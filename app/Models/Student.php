@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Student extends Model
 {
-     protected $fillable = [
+    protected $fillable = [
         'name',
         'nis',
         'class_room_id',
@@ -20,7 +20,7 @@ class Student extends Model
 
     public function parent()
     {
-        return $this->hasOne(ParentModel::class, 'student_id');
+        return $this->belongsTo(ParentModel::class, 'parent_id')->withDefault();
     }
 
     public function violations()

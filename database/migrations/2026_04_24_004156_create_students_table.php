@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('students', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('nis');
-            $table->foreignId('class_id')->constrained();
+            $table->string('name');
+            $table->string('nis')->unique();
+            $table->foreignId('class_id')->constrained('classes');
+            $table->foreignId('parent_id')->nullable()->constrained('parents');
             $table->integer('total_points')->default(0);
             $table->timestamps();
         });

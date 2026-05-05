@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
 
-new #[Layout('layouts.glass')] class extends Component
+new #[Layout('components.layouts.auth')] class extends Component
 {
     public LoginForm $form;
 
@@ -20,137 +20,116 @@ new #[Layout('layouts.glass')] class extends Component
 
         Session::regenerate();
 
+        if (auth()->user()->role === 'admin') {
+            $this->redirect(route('admin.dashboard', absolute: false), navigate: true);
+            return;
+        }
+
         $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
     }
 }; ?>
 
-<div class="w-full max-w-7xl mx-auto px-6 py-12 md:py-20 flex flex-col items-center">
-    
-    <!-- Back Button -->
-    <div class="w-full flex justify-start mb-8 z-50">
-        <a href="/" class="flex items-center gap-2 text-emerald-100/70 hover:text-white transition-colors px-4 py-2 rounded-xl hover:bg-white/5 border border-transparent hover:border-white/10 backdrop-blur-md">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-            Kembali
-        </a>
+<div>
+    <div class="mb-8">
+        <h2 class="text-3xl font-heading font-bold text-slate-900 mb-2">Selamat Datang Kembali</h2>
+        <p class="text-slate-600 text-sm">Masuk untuk mengakses dashboard DO RULES</p>
     </div>
 
-    <div class="w-full grid md:grid-cols-2 gap-12 lg:gap-24 items-center">
+    <x-auth-session-status class="mb-4 text-teal-600 bg-teal-50 p-3 rounded-lg text-sm" :status="session('status')" />
+
+    <form wire:submit="login" class="space-y-6">
         
-        <!-- Left Side: Branding -->
-        <div class="hidden md:block" 
-             x-show="show" 
-             x-transition:enter="transition ease-out duration-1000 delay-300"
-             x-transition:enter-start="opacity-0 -translate-x-12"
-             x-transition:enter-end="opacity-100 translate-x-0">
-             
-            <div class="text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight tracking-tight">
-                Do-<span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-[#e6f4ed]">Rules</span>
-            </div>
-            <p class="text-emerald-100/70 text-lg mb-10 leading-relaxed max-w-md">
-                Platform digital untuk memantau ketertiban, membangun karakter, dan menciptakan lingkungan belajar yang kondusif.
-            </p>
-            
-            <!-- Features List -->
-            <div class="space-y-6">
-                @php
-                    $features = [
-                        "Pantau pelanggaran siswa secara real-time",
-                        "Sistem poin & sanksi otomatis",
-                        "Laporan statistik lengkap & akurat",
-                        "Kolaborasi Guru, Piket, dan Admin"
-                    ];
-                @endphp
-                
-                @foreach ($features as $index => $feature)
-                    <div class="flex items-center gap-4 text-emerald-100/80">
-                        <div class="w-8 h-8 bg-emerald-500/20 rounded-full flex items-center justify-center border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]">
-                            <div class="w-2.5 h-2.5 bg-emerald-400 rounded-full animate-pulse"></div>
-                        </div>
-                        <span class="font-medium">{{ $feature }}</span>
-                    </div>
-                @endforeach
-            </div>
-        </div>
+        <!-- Email -->
+        <x-ui.input 
+            wire:model="form.email" 
+            id="email" 
+            name="email"
+            type="email" 
+            label="Email" 
+            placeholder="nama@sekolah.sch.id" 
+            required 
+            autofocus 
+            autocomplete="username"
+        >
+            <x-slot:icon>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path></svg>
+            </x-slot:icon>
+        </x-ui.input>
 
-        <!-- Right Side: Login Form -->
-        <div class="w-full max-w-md mx-auto relative"
-             x-show="show" 
-             x-transition:enter="transition ease-out duration-1000 delay-500"
-             x-transition:enter-start="opacity-0 translate-x-12"
-             x-transition:enter-end="opacity-100 translate-x-0">
-             
-            <div class="bg-white/5 backdrop-blur-2xl border border-white/20 rounded-[2.5rem] p-8 md:p-10 shadow-2xl relative z-10">
-                
-                <div class="mb-8">
-                    <h2 class="text-3xl font-bold text-white mb-2">Selamat Datang!</h2>
-                    <p class="text-emerald-100/60 text-sm">Silakan masuk menggunakan akun terdaftar Anda.</p>
+        <!-- Password -->
+        <x-ui.input 
+            wire:model="form.password" 
+            id="password" 
+            name="password"
+            type="password" 
+            label="Password" 
+            placeholder="••••••••" 
+            required 
+            autocomplete="current-password"
+        >
+            <x-slot:icon>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+            </x-slot:icon>
+        </x-ui.input>
+
+        <!-- Remember & Forgot -->
+        <div class="flex items-center justify-between">
+            <label for="remember" class="flex items-center cursor-pointer group">
+                <div class="relative flex items-center">
+                    <input wire:model="form.remember" id="remember" type="checkbox" class="peer sr-only">
+                    <div class="w-5 h-5 bg-white border-2 border-slate-300 rounded peer-checked:bg-teal-600 peer-checked:border-teal-600 transition-all flex items-center justify-center">
+                        <svg class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
                 </div>
+                <span class="ml-3 text-sm text-slate-600 group-hover:text-slate-900 transition-colors">Ingat saya</span>
+            </label>
 
-                <x-auth-session-status class="mb-4 text-emerald-400" :status="session('status')" />
-
-                <form wire:submit="login" class="space-y-6">
-                    
-                    <!-- Email / NIS / NIP -->
-                    <div>
-                        <label for="email" class="block text-xs font-bold text-emerald-100/70 uppercase tracking-widest mb-2 ml-1">Email / NIP</label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-emerald-100/50">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                            </span>
-                            <input wire:model="form.email" id="email" type="email" required autofocus autocomplete="username"
-                                class="w-full pl-11 pr-4 py-3.5 bg-black/20 border border-white/10 text-white placeholder-emerald-100/30 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 rounded-2xl text-sm transition-all" 
-                                placeholder="Masukkan email anda">
-                        </div>
-                        <x-input-error :messages="$errors->get('form.email')" class="mt-2 text-rose-400 text-xs" />
-                    </div>
-
-                    <!-- Password -->
-                    <div>
-                        <label for="password" class="block text-xs font-bold text-emerald-100/70 uppercase tracking-widest mb-2 ml-1">Password</label>
-                        <div class="relative">
-                            <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-emerald-100/50">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                            </span>
-                            <input wire:model="form.password" id="password" type="password" required autocomplete="current-password"
-                                class="w-full pl-11 pr-4 py-3.5 bg-black/20 border border-white/10 text-white placeholder-emerald-100/30 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 rounded-2xl text-sm transition-all" 
-                                placeholder="••••••••">
-                        </div>
-                        <x-input-error :messages="$errors->get('form.password')" class="mt-2 text-rose-400 text-xs" />
-                    </div>
-
-                    <!-- Remember & Forgot -->
-                    <div class="flex items-center justify-between pt-2">
-                        <label for="remember" class="flex items-center cursor-pointer group">
-                            <div class="relative flex items-center">
-                                <input wire:model="form.remember" id="remember" type="checkbox" class="peer sr-only">
-                                <div class="w-5 h-5 bg-black/20 border border-white/20 rounded peer-checked:bg-emerald-500 peer-checked:border-emerald-500 transition-all flex items-center justify-center">
-                                    <svg class="w-3 h-3 text-white opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
-                                </div>
-                            </div>
-                            <span class="ml-3 text-sm text-emerald-100/70 group-hover:text-white transition-colors">Ingat Saya</span>
-                        </label>
-
-                        @if (Route::has('password.request'))
-                            <a href="{{ route('password.request') }}" wire:navigate class="text-sm font-medium text-emerald-400 hover:text-emerald-300 transition-colors">
-                                Lupa Password?
-                            </a>
-                        @endif
-                    </div>
-
-                    <!-- Submit Button -->
-                    <div class="pt-4">
-                        <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-2xl transition-all hover:scale-[1.02] active:scale-[0.98] shadow-[0_0_20px_rgba(16,185,129,0.3)]">
-                            Masuk Sekarang
-                        </button>
-                    </div>
-
-                </form>
-            </div>
-            
-            <!-- Decorative Elements behind card -->
-            <div class="absolute -top-6 -right-6 w-24 h-24 bg-emerald-500/30 rounded-full blur-2xl z-0"></div>
-            <div class="absolute -bottom-6 -left-6 w-32 h-32 bg-[#3ebd7e]/20 rounded-full blur-2xl z-0"></div>
+            @if (Route::has('password.request'))
+                <a href="{{ route('password.request') }}" wire:navigate class="text-sm font-medium text-teal-600 hover:text-teal-800 transition-colors">
+                    Lupa password?
+                </a>
+            @endif
         </div>
 
-    </div>
+        <!-- Submit Button -->
+        <div class="pt-2">
+            <x-ui.button type="submit" variant="primary" class="w-full relative" iconPosition="right">
+                <span wire:loading.remove wire:target="login">Masuk</span>
+                <span wire:loading wire:target="login">Memproses...</span>
+                <x-slot:icon>
+                    <svg wire:loading.remove wire:target="login" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    <svg wire:loading wire:target="login" class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </x-slot:icon>
+            </x-ui.button>
+        </div>
+
+        <div class="relative py-4">
+            <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-slate-200"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+                <span class="px-2 bg-white text-slate-400">Atau masuk dengan</span>
+            </div>
+        </div>
+
+        <!-- Social Login Placeholder -->
+        <div>
+            <x-ui.button type="button" variant="outline" class="w-full bg-white text-slate-700 border-slate-300 hover:bg-slate-50 focus:ring-slate-500" iconPosition="left">
+                <x-slot:icon>
+                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+                </x-slot:icon>
+                Masuk dengan Google
+            </x-ui.button>
+        </div>
+
+        <div class="text-center pt-4">
+            <p class="text-sm text-slate-600">
+                Belum punya akun? 
+                <a href="{{ route('register') }}" wire:navigate class="font-medium text-teal-600 hover:text-teal-800 transition-colors">Daftar sekarang</a>
+            </p>
+        </div>
+    </form>
 </div>

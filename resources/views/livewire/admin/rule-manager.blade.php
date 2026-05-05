@@ -7,7 +7,7 @@
         </div>
         <div class="flex items-center gap-3">
             <button wire:click="$toggle('showForm')" 
-                class="bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold px-6 py-2.5 rounded-full flex items-center gap-2 transition-all shadow-md active:scale-95">
+                class="bg-teal-500 hover:bg-teal-600 text-white text-sm font-semibold px-6 py-2.5 rounded-full flex items-center gap-2 transition-all shadow-md active:scale-95">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $showForm ? 'M20 12H4' : 'M12 4v16m8-8H4' }}"></path>
                 </svg>
@@ -31,7 +31,7 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Deskripsi Peraturan</label>
                         <textarea wire:model="name" rows="3" placeholder="Misal: Membolos saat jam pelajaran berlangsung" 
-                            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-emerald-900/10 rounded-2xl text-sm transition-all resize-none"></textarea>
+                            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all resize-none"></textarea>
                         @error('name') <span class="text-xs text-rose-500 ml-1">{{ $message }}</span> @enderror
                     </div>
 
@@ -39,7 +39,7 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Bobot Poin</label>
                         <input wire:model="point" type="number" placeholder="Misal: 10" 
-                            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-emerald-900/10 rounded-2xl text-sm transition-all">
+                            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all">
                         @error('point') <span class="text-xs text-rose-500 ml-1">{{ $message }}</span> @enderror
                     </div>
 
@@ -47,7 +47,7 @@
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Tingkat Pelanggaran</label>
                         <select wire:model="level" 
-                            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-emerald-900/10 rounded-2xl text-sm transition-all appearance-none cursor-pointer">
+                            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all appearance-none cursor-pointer">
                             <option value="">Pilih Level...</option>
                             <option value="ringan">Ringan (Hijau)</option>
                             <option value="sedang">Sedang (Kuning)</option>
@@ -63,7 +63,7 @@
                             </button>
                         @endif
                         <button type="submit" 
-                            class="flex-[2] bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-emerald-500/20">
+                            class="flex-[2] bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-teal-500/20">
                             {{ $isEdit ? 'Simpan Perubahan' : 'Tambah Data' }}
                         </button>
                     </div>
@@ -83,7 +83,7 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                         </span>
                         <input wire:model.live="search" type="text" placeholder="Cari peraturan..." 
-                            class="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-full text-sm focus:ring-2 focus:ring-emerald-900/10 transition-all">
+                            class="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-full text-sm focus:ring-2 focus:ring-teal-900/10 transition-all">
                     </div>
                 </div>
 
@@ -116,7 +116,7 @@
                                 
                                 <td class="px-8 py-5 text-center">
                                     <span class="px-4 py-1.5 rounded-full text-xs font-bold tracking-wide
-                                        @if($rule->level === 'ringan') bg-emerald-50 text-emerald-600 border border-emerald-100
+                                        @if($rule->level === 'ringan') bg-teal-50 text-teal-600 border border-teal-100
                                         @elseif($rule->level === 'sedang') bg-amber-50 text-amber-600 border border-amber-100
                                         @elseif($rule->level === 'berat') bg-rose-50 text-rose-600 border border-rose-100
                                         @endif

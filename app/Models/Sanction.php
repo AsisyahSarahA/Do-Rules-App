@@ -11,7 +11,7 @@ class Sanction extends Model
         'max_point',
         'action'
     ];
-    
+
     public function violation()
     {
         return $this->belongsTo(Violation::class);

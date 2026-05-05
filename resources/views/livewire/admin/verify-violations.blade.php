@@ -24,7 +24,7 @@
                         🔍
                     </span>
                     <input wire:model.live="search" type="text" placeholder="Cari siswa..."
-                        class="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-full text-sm focus:ring-2 focus:ring-emerald-900/10">
+                        class="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-full text-sm focus:ring-2 focus:ring-teal-900/10">
                 </div>
             </div>
 
@@ -94,7 +94,7 @@
                                 {{-- AKSI --}}
                                 <td class="px-8 py-5 text-center">
                                     <button wire:click="verify({{ $v->id }})"
-                                        class="bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-4 py-2 rounded-full shadow-md transition-all active:scale-95">
+                                        class="bg-teal-500 hover:bg-teal-600 text-white text-xs font-bold px-4 py-2 rounded-full shadow-md transition-all active:scale-95">
                                         Verifikasi
                                     </button>
                                 </td>

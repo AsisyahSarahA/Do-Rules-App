@@ -7,6 +7,8 @@ use App\Livewire\Admin\ManageClasses;
 use App\Livewire\Admin\VerifyViolations;
 use App\Livewire\Admin\ManageTeachers;
 use App\Livewire\Admin\ManageStudents;
+use App\Livewire\Admin\ManageParents;
+
 /*
 | Public Routes
 */
@@ -19,7 +21,7 @@ Route::view('/', 'welcome');
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // Dashboard Utama (Bisa diarahkan sesuai role nanti)
-    // Route::view('dashboard', 'dashboard')->name('dashboard');
+    Route::view('dashboard', 'dashboard')->name('dashboard');
 
     // Profile Settings
     Route::view('profile', 'profile')->name('profile');
@@ -32,10 +34,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/manage-classes', ManageClasses::class)->name('manage-classes');
         Route::get('/rules', \App\Livewire\Admin\RuleManager::class)->name('rules');
         Route::get('/manage-students', ManageStudents::class)->name('manage-students');
-
-
-
+        Route::get('/students', ManageStudents::class)->name('students');
         Route::get('/teachers', ManageTeachers::class)->name('teachers');
+        Route::get('/parents', ManageParents::class)->name('parents');
 
 
         Route::get('/verify-violations', VerifyViolations::class)->name('verify-violations');

@@ -14,11 +14,11 @@ return new class extends Migration
         Schema::create('parents', function (Blueprint $table) {
             $table->id();
 
-            $table->foreignId('student_id')
-                ->constrained('students')
-                ->cascadeOnDelete();
+            // $table->foreignId('student_id')
+            //     ->constrained('students')
+            //     ->cascadeOnDelete();
 
-            $table->string('name_parent');
+            $table->string('name');
             $table->string('phone');
             $table->text('address');
             $table->timestamps();

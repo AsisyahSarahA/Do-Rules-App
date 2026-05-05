@@ -5,11 +5,13 @@ namespace App\Livewire\Admin;
 use Livewire\Component;
 use App\Models\Teacher;
 use Livewire\Attributes\Layout;
+use App\Models\User;
+
 
 #[Layout('layouts.app')]
 class ManageTeachers extends Component
 {
-    public $name, $nip, $teacherId;
+    public $name, $nip, $phone, $email, $teacherId;
     public $isEdit = false;
     public $showForm = false;
     public $search = '';
@@ -19,14 +21,18 @@ class ManageTeachers extends Component
     {
         $this->validate([
             'name' => 'required',
-            'nip' => 'required|unique:teachers,nip,' . $this->teacherId
+            'nip' => 'required|unique:teachers,nip,' . $this->teacherId,
+            'phone' => 'nullable',
+            'email' => 'nullable|email',
         ]);
 
         Teacher::updateOrCreate(
             ['id' => $this->teacherId],
             [
                 'name' => $this->name,
-                'nip' => $this->nip
+                'nip' => $this->nip,
+                'phone' => $this->phone,
+                'email' => $this->email,
             ]
         );
 
@@ -43,6 +49,8 @@ class ManageTeachers extends Component
         $this->teacherId = $teacher->id;
         $this->name = $teacher->name;
         $this->nip = $teacher->nip;
+        $this->phone = $teacher->phone;
+        $this->email = $teacher->email;
 
         $this->isEdit = true;
         $this->showForm = true;
@@ -59,7 +67,7 @@ class ManageTeachers extends Component
     // ================= RESET =================
     public function resetForm()
     {
-        $this->reset(['name', 'nip', 'teacherId']);
+        $this->reset(['name', 'nip', 'phone', 'email', 'teacherId']);
         $this->isEdit = false;
         $this->showForm = false;
     }
@@ -67,15 +75,24 @@ class ManageTeachers extends Component
     // ================= RENDER =================
     public function render()
     {
-        $teachers = Teacher::when($this->search, function ($q) {
-            $q->where('name', 'like', '%' . $this->search . '%')
-              ->orWhere('nip', 'like', '%' . $this->search . '%');
-        })
-        ->latest()
-        ->get();
+        $teachers = User::whereIn('role', ['guru', 'wali_kelas', 'piket'])
+            ->when($this->search, function ($q) {
+                $q->where('name', 'like', '%' . $this->search . '%');
+            })
+            ->latest()
+            ->get();
 
         return view('livewire.admin.manage-teachers', [
             'teachers' => $teachers
         ]);
     }
+
+    public function setRole($id, $role)
+    {
+        $user = User::findOrFail($id);
+        $user->update(['role' => $role]);
+
+        session()->flash('message', 'Role berhasil diupdate');
+    }
+
 }
