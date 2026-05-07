@@ -18,45 +18,33 @@ class ViolationController extends Controller
 
     public function store(Request $request)
     {
-        // 1. VALIDASI
         $request->validate([
             'student_id' => 'required|exists:students,id',
             'rule_id' => 'required|exists:rules,id',
+            'notes' => 'nullable|string'
         ]);
 
-        // 2. AMBIL DATA
-        $rule = Rule::findOrFail($request->rule_id);
-        $student = Student::findOrFail($request->student_id);
-
-        // 3. TRANSACTION (PENTING)
         DB::beginTransaction();
 
         try {
-            // simpan pelanggaran
+
             $violation = Violation::create([
-                'student_id' => $student->id,
-                'rule_id' => $rule->id,
+                'student_id' => $request->student_id,
+                'rule_id' => $request->rule_id,
                 'reported_by' => Auth::id(),
+                'notes' => $request->notes,
                 'status' => 'pending'
             ]);
-
-            // tambah point
-            $student->increment('total_points', $rule->point);
-
-            // tentukan handler
-            $handler = match ($rule->level) {
-                'ringan' => 'wali_kelas',
-                'sedang' => 'kesiswaan',
-                default => 'bk'
-            };
 
             DB::commit();
 
             return response()->json([
-                'message' => 'Pelanggaran berhasil dicatat',
-                'handled_by' => $handler
+                'message' => 'Pelanggaran berhasil dilaporkan',
+                'data' => $violation
             ]);
+
         } catch (\Exception $e) {
+
             DB::rollBack();
 
             return response()->json([

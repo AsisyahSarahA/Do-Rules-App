@@ -28,6 +28,7 @@ class Student extends Model
     {
         return $this->hasMany(Violation::class);
     }
+    
 
     public function warningLetters()
     {

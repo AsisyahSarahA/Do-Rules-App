@@ -1,67 +1,146 @@
 <?php
 
 use App\Livewire\Admin\Dashboard as AdminDashboard;
-use App\Livewire\Admin\ManageRules; // Contoh untuk Master Peraturan nanti
 use Illuminate\Support\Facades\Route;
+
 use App\Livewire\Admin\ManageClasses;
-use App\Livewire\Admin\VerifyViolations;
 use App\Livewire\Admin\ManageTeachers;
 use App\Livewire\Admin\ManageStudents;
 use App\Livewire\Admin\ManageParents;
+use App\Livewire\Admin\RuleManager;
+use App\Livewire\Admin\VerifyViolations;
+use App\Livewire\Admin\ViolationManager;
 
-/*
-| Public Routes
-*/
 
 Route::view('/', 'welcome');
 
 /*
-| Authenticated Routes (Semua yang sudah Login)
+|--------------------------------------------------------------------------
+| Authenticated Routes
+|--------------------------------------------------------------------------
 */
+
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // Dashboard Utama (Bisa diarahkan sesuai role nanti)
-    Route::view('dashboard', 'dashboard')->name('dashboard');
+    /*
+    |--------------------------------------------------------------------------
+    | Dashboard & Profile
+    |--------------------------------------------------------------------------
+    */
 
-    // Profile Settings
-    Route::view('profile', 'profile')->name('profile');
+    Route::view('/dashboard', 'dashboard')->name('dashboard');
+
+    Route::view('/profile', 'profile')->name('profile');
 
     /*
-    | Admin Only Routes
+    |--------------------------------------------------------------------------
+    | ADMIN ROUTES
+    |--------------------------------------------------------------------------
     */
-    Route::middleware(['role:admin'])->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/dashboard', AdminDashboard::class)->name('dashboard');
-        Route::get('/manage-classes', ManageClasses::class)->name('manage-classes');
-        Route::get('/rules', \App\Livewire\Admin\RuleManager::class)->name('rules');
-        Route::get('/manage-students', ManageStudents::class)->name('manage-students');
-        Route::get('/students', ManageStudents::class)->name('students');
-        Route::get('/teachers', ManageTeachers::class)->name('teachers');
-        Route::get('/parents', ManageParents::class)->name('parents');
 
+    Route::middleware(['role:admin'])
+        ->prefix('admin')
+        ->name('admin.')
+        ->group(function () {
 
-        Route::get('/verify-violations', VerifyViolations::class)->name('verify-violations');
-    });
+            // Dashboard
+            Route::get('/dashboard', AdminDashboard::class)
+                ->name('dashboard');
+
+            // Classes
+            Route::get('/manage-classes', ManageClasses::class)
+                ->name('manage-classes');
+
+            // Rules
+            Route::get('/rules', RuleManager::class)
+                ->name('rules');
+
+            // Students
+            Route::get('/manage-students', ManageStudents::class)
+                ->name('manage-students');
+
+            Route::get('/students', ManageStudents::class)
+                ->name('students');
+
+            // Teachers
+            Route::get('/teachers', ManageTeachers::class)
+                ->name('teachers');
+
+            // Parents
+            Route::get('/parents', ManageParents::class)
+                ->name('parents');
+
+            /*
+            |--------------------------------------------------------------------------
+            | VIOLATIONS
+            |--------------------------------------------------------------------------
+            */
+
+            // Input Pelanggaran
+            Route::get('/violations', ViolationManager::class)
+                ->name('violations');
+
+            // Verifikasi Pelanggaran
+            Route::get('/verify-violations', VerifyViolations::class)
+                ->name('verify-violations');
+        });
 
     /*
-    | Guru / Piket / Admin Routes (Lapor Pelanggaran)
+    |--------------------------------------------------------------------------
+    | GURU / PIKET / ADMIN
+    |--------------------------------------------------------------------------
     */
-    Route::middleware(['role:admin,guru,piket'])->prefix('teacher')->name('teacher.')->group(function () {
-        // Route::get('/report', TeacherReport::class)->name('report');
-    });
+
+    Route::middleware(['role:admin,guru,piket'])
+        ->prefix('teacher')
+        ->name('teacher.')
+        ->group(function () {
+
+            // contoh nanti
+            // Route::get('/report', TeacherReport::class)
+            //     ->name('report');
+
+        });
 
     /*
-    | Piket / Admin Routes (Verifikasi)
+    |--------------------------------------------------------------------------
+    | PIKET / ADMIN
+    |--------------------------------------------------------------------------
     */
-    Route::middleware(['role:admin,piket'])->prefix('piket')->name('piket.')->group(function () {
-        // Route::get('/verify', VerifyViolation::class)->name('verify');
-    });
+
+    Route::middleware(['role:admin,piket'])
+        ->prefix('piket')
+        ->name('piket.')
+        ->group(function () {
+
+            // contoh nanti
+            // Route::get('/verify', VerifyViolation::class)
+            //     ->name('verify');
+
+        });
 
     /*
-    | Siswa Routes
+    |--------------------------------------------------------------------------
+    | SISWA
+    |--------------------------------------------------------------------------
     */
-    Route::middleware(['role:siswa'])->prefix('siswa')->name('siswa.')->group(function () {
-        // Route::get('/my-violations', MyViolations::class)->name('violations');
-    });
+
+    Route::middleware(['role:siswa'])
+        ->prefix('siswa')
+        ->name('siswa.')
+        ->group(function () {
+
+            // contoh nanti
+            // Route::get('/my-violations', MyViolations::class)
+            //     ->name('violations');
+
+        });
 });
+
+/*
+|--------------------------------------------------------------------------
+| AUTH ROUTES
+|--------------------------------------------------------------------------
+*/
 
 require __DIR__ . '/auth.php';

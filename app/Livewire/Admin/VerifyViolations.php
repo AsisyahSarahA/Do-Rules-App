@@ -6,18 +6,18 @@ use Livewire\Component;
 use App\Models\Violation;
 use Livewire\Attributes\Layout;
 
+#[Layout('layouts.app')]
+
 class VerifyViolations extends Component
 {
-    #[Layout('layouts.app')]
     public $search = '';
 
     public function verify($id)
     {
-        app(\App\Http\Controllers\VerificationController::class)->verify($id);
+        app(\App\Http\Controllers\VerificationController::class)
+            ->verify($id);
 
         session()->flash('message', 'Berhasil diverifikasi');
-         
-        $this->dispatch('$refresh');
     }
 
     public function render()
@@ -26,7 +26,8 @@ class VerifyViolations extends Component
             ->where('status', 'pending')
             ->when($this->search, function ($query) {
                 $query->whereHas('student', function ($q) {
-                    $q->where('nis', 'like', '%' . $this->search . '%');
+                    $q->where('nis', 'like', '%' . $this->search . '%')
+                      ->orWhere('name', 'like', '%' . $this->search . '%');
                 });
             })
             ->latest()
