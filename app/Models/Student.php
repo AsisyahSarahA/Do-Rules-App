@@ -9,18 +9,19 @@ class Student extends Model
     protected $fillable = [
         'name',
         'nis',
-        'class_room_id',
+        'class_id',
         'parent_id',
         'total_points'
     ];
+
     public function classRoom()
     {
-        return $this->belongsTo(ClassRoom::class);
+        return $this->belongsTo(ClassRoom::class, 'class_id');
     }
 
     public function parent()
     {
-        return $this->belongsTo(ParentModel::class, 'parent_id')->withDefault();
+        return $this->belongsTo(ParentModel::class, 'parent_id');
     }
 
     public function violations()

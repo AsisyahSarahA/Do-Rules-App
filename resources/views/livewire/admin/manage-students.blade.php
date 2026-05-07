@@ -36,7 +36,7 @@
 
                     <div>
                         <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Kelas</label>
-                        <select wire:model="class_room_id" 
+                        <select wire:model="class_id" 
                             class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all appearance-none">
                             <option value="">Pilih Kelas...</option>
                             @foreach($classes as $class)

@@ -4,35 +4,38 @@ namespace App\Livewire\Admin;
 
 use Livewire\Component;
 use App\Models\ParentModel;
+use App\Models\Student;
 use Livewire\Attributes\Layout;
 
 #[Layout('layouts.app')]
-
 class ManageParents extends Component
 {
-    public $name, $phone, $email, $address, $parent_id;
-    public $search = '';
+    public $name, $phone, $address, $email, $student_id, $parentId;
     public $isEdit = false;
-    public $showForm = false;
+    public $search = '';
+    public $showForm = false; // ✅ FIX DISI
 
     public function save()
     {
         $this->validate([
             'name' => 'required',
-            'phone' => 'required'
+            'phone' => 'required',
+            'student_id' => 'required'
         ]);
 
         ParentModel::updateOrCreate(
-            ['id' => $this->parent_id],
+            ['id' => $this->parentId],
             [
                 'name' => $this->name,
                 'phone' => $this->phone,
-                'email' => $this->email,
                 'address' => $this->address,
+                'email' => $this->email,
+                'student_id' => $this->student_id
             ]
         );
 
-        session()->flash('message', 'Data orang tua berhasil disimpan');
+        session()->flash('success', 'Data parent berhasil disimpan ✅');
+
         $this->resetForm();
     }
 
@@ -40,35 +43,39 @@ class ManageParents extends Component
     {
         $parent = ParentModel::findOrFail($id);
 
-        $this->parent_id = $id;
+        $this->parentId = $parent->id;
         $this->name = $parent->name;
         $this->phone = $parent->phone;
         $this->email = $parent->email;
         $this->address = $parent->address;
+        $this->student_id = $parent->student_id;
 
         $this->isEdit = true;
-        $this->showForm = true;
     }
 
     public function delete($id)
     {
         ParentModel::find($id)?->delete();
-        session()->flash('message', 'Data orang tua berhasil dihapus');
+
+        session()->flash('success', 'Data parent berhasil dihapus ❌');
     }
 
     public function resetForm()
     {
-        $this->reset(['name','phone','email','address','parent_id']);
+        $this->reset(['name', 'phone', 'address', 'email', 'student_id', 'parentId']);
         $this->isEdit = false;
-        $this->showForm = false;
     }
 
     public function render()
     {
         return view('livewire.admin.manage-parents', [
-            'parents' => ParentModel::when($this->search, function ($q) {
-                $q->where('name', 'like', '%' . $this->search . '%');
-            })->latest()->get()
+            'parents' => ParentModel::with('students')
+                ->where('name', 'like', '%' . $this->search . '%')
+                ->latest()
+                ->get(),
+
+
+            'students' => Student::all()
         ]);
     }
 }

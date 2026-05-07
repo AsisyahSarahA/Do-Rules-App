@@ -12,7 +12,7 @@ use Livewire\Attributes\Layout;
 
 class ManageStudents extends Component
 {
-    public $name, $nis, $class_room_id, $parent_id, $studentId;
+    public $name, $nis, $class_id, $parent_id, $studentId;
     public $search = '';
     public $isEdit = false;
     public $showForm = false;
@@ -22,7 +22,7 @@ class ManageStudents extends Component
         $this->validate([
             'name' => 'required',
             'nis' => 'required|unique:students,nis,' . $this->studentId,
-            'class_room_id' => 'required',
+            'class_id' => 'required',
         ]);
 
         Student::updateOrCreate(
@@ -30,7 +30,7 @@ class ManageStudents extends Component
             [
                 'name' => $this->name,
                 'nis' => $this->nis,
-                'class_room_id' => $this->class_room_id,
+                'class_id' => $this->class_id,
                 'parent_id' => $this->parent_id,
             ]
         );
@@ -46,7 +46,7 @@ class ManageStudents extends Component
         $this->studentId = $student->id;
         $this->name = $student->name;
         $this->nis = $student->nis;
-        $this->class_room_id = $student->class_room_id;
+        $this->class_id = $student->class_id;
         $this->parent_id = $student->parent_id;
 
         $this->isEdit = true;
@@ -60,13 +60,13 @@ class ManageStudents extends Component
 
     public function resetForm()
     {
-        $this->reset(['name', 'nis', 'class_room_id', 'parent_id', 'studentId']);
+        $this->reset(['name', 'nis', 'class_id', 'parent_id', 'studentId']);
         $this->isEdit = false;
     }
 
     public function render()
     {
-        $students = Student::with(['classRoom', 'parent'])
+    $students = Student::with(['classRoom', 'parent'])
             ->when($this->search, function ($q) {
                 $q->where('name', 'like', '%' . $this->search . '%')
                   ->orWhere('nis', 'like', '%' . $this->search . '%');

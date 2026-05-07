@@ -29,10 +29,41 @@
                     
                     <!-- Nama Peraturan -->
                     <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Deskripsi Peraturan</label>
-                        <textarea wire:model="name" rows="3" placeholder="Misal: Membolos saat jam pelajaran berlangsung" 
-                            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all resize-none"></textarea>
-                        @error('name') <span class="text-xs text-rose-500 ml-1">{{ $message }}</span> @enderror
+                       <!-- Nama Peraturan -->
+<div>
+    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">
+        Nama Peraturan
+    </label>
+
+    <input
+        wire:model="name"
+        type="text"
+        placeholder="Misal: Merokok"
+        class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all"
+    >
+
+    @error('name')
+        <span class="text-xs text-rose-500 ml-1">{{ $message }}</span>
+    @enderror
+</div>
+
+<!-- Deskripsi -->
+<div>
+    <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">
+        Deskripsi Peraturan
+    </label>
+
+    <textarea
+        wire:model="description"
+        rows="3"
+        placeholder="Misal: Membolos saat jam pelajaran berlangsung"
+        class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all resize-none"
+    ></textarea>
+
+    @error('description')
+        <span class="text-xs text-rose-500 ml-1">{{ $message }}</span>
+    @enderror
+</div>
                     </div>
 
                     <!-- Poin -->
@@ -94,6 +125,7 @@
                             <tr class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] bg-gray-50/50">
                                 <th class="px-8 py-5">Peraturan</th>
                                 <th class="px-8 py-5 text-center">Bobot Poin</th>
+                                <th class="px-8 py-5 text-center">Deskripsi</th>
                                 <th class="px-8 py-5 text-center">Tingkat</th>
                                 <th class="px-8 py-5 text-center">Aksi</th>
                             </tr>
@@ -122,6 +154,12 @@
                                         @endif
                                     ">
                                         {{ ucfirst($rule->level) }}
+                                    </span>
+                                </td>
+
+                                <td class="px-8 py-5 max-w-md">
+                                    <span class="text-sm text-gray-600">
+                                        {{ $rule->description }}
                                     </span>
                                 </td>
                                 

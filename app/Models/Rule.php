@@ -8,6 +8,7 @@ class Rule extends Model
 {
     protected $fillable = [
         'name',
+        'description',
         'point',
         'level',
     ];
@@ -17,7 +18,6 @@ class Rule extends Model
     {
         return $this->hasMany(Violation::class);
     }
-    
 
     // konstanta level
     const LEVEL_RINGAN = 'ringan';

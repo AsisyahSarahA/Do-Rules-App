@@ -12,8 +12,14 @@ class ParentModel extends Model
         'name',
         'phone',
         'email',
-        'address'
+        'address',
     ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONSHIPS
+    |--------------------------------------------------------------------------
+    */
 
     public function students()
     {

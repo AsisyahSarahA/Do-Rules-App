@@ -7,8 +7,9 @@ use App\Models\User;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
+use App\Models\Student;
 
-#[Layout('layouts.app')]// lebih konsisten
+#[Layout('layouts.app')] // lebih konsisten
 
 class ManageClasses extends Component
 {
@@ -18,6 +19,8 @@ class ManageClasses extends Component
     public $showForm = false;
     public $isEdit = false;
     public $search = '';
+    public $selected_class_id;
+    public $students = [];
 
     protected $paginationTheme = 'tailwind';
 
@@ -36,7 +39,7 @@ class ManageClasses extends Component
         ]);
 
         ClassRoom::updateOrCreate(
-           ['id' => $this->selected_id], // ✅ FIX
+            ['id' => $this->selected_id], // ✅ FIX
             [
                 'name' => $this->name,
                 'wali_kelas_id' => $this->wali_kelas_id,
@@ -96,5 +99,10 @@ class ManageClasses extends Component
             'classes' => $classes,
             'teachers' => $teachers
         ]);
+    }
+
+    public function updatedSelectedClassId($value)
+    {
+        $this->students = Student::where('class_id', $value)->get();
     }
 }
