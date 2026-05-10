@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\WithPagination;
+use Livewire\Attributes\On;
 
 #[Layout('layouts.app')]
 
@@ -42,7 +43,7 @@ class RuleManager extends Component
             ]
         );
 
-        session()->flash('message', 'Data berhasil disimpan');
+        $this->dispatch('success', message: 'Data tata tertib berhasil disimpan!');
 
         $this->resetForm();
     }
@@ -63,9 +64,14 @@ class RuleManager extends Component
 
     public function delete($id)
     {
-        Rule::find($id)?->delete();
+        $this->dispatch('confirmDelete', id: $id);
+    }
 
-        session()->flash('message', 'Data berhasil dihapus');
+    #[On('deleteConfirmed')]
+    public function deleteConfirmed($id)
+    {
+        Rule::find($id)?->delete();
+        $this->dispatch('success', message: 'Data tata tertib berhasil dihapus!');
     }
 
     public function resetForm()

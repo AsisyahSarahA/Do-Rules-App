@@ -20,11 +20,18 @@ new #[Layout('components.layouts.auth')] class extends Component
 
         Session::regenerate();
 
-        if (auth()->user()->role === 'admin') {
+        $user = auth()->user();
+        
+        // Simpan pesan sapaan ke session
+        session()->flash('welcome_message', "Selamat datang, {$user->name}! 👋");
+
+        // Redirect berdasarkan role
+        if ($user->role === 'admin') {
             $this->redirect(route('admin.dashboard', absolute: false), navigate: true);
             return;
         }
 
+        // Default redirect for other roles (guru, piket, siswa, etc.)
         $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
     }
 }; ?>

@@ -94,8 +94,16 @@
                             </button>
                         @endif
                         <button type="submit" 
-                            class="flex-[2] bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-teal-500/20">
-                            {{ $isEdit ? 'Simpan Perubahan' : 'Tambah Data' }}
+                            wire:loading.attr="disabled"
+                            class="flex-[2] bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-teal-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                            <span wire:loading.remove wire:target="save">{{ $isEdit ? 'Simpan Perubahan' : 'Tambah Data' }}</span>
+                            <span wire:loading wire:target="save" class="flex items-center gap-2">
+                                <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Memproses...
+                            </span>
                         </button>
                     </div>
                 </form>
@@ -168,7 +176,7 @@
                                         <button wire:click="edit({{ $rule->id }})" class="p-2 text-blue-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Edit">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M18.364 5.364a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.364-9.364z"></path></svg>
                                         </button>
-                                        <button onclick="confirm('Apakah Anda yakin ingin menghapus peraturan ini?') || event.stopImmediatePropagation()" wire:click="delete({{ $rule->id }})" class="p-2 text-rose-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all" title="Hapus">
+                                        <button wire:click="delete({{ $rule->id }})" class="p-2 text-rose-400 hover:text-rose-50 hover:bg-rose-50 rounded-lg transition-all" title="Hapus">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                         </button>
                                     </div>

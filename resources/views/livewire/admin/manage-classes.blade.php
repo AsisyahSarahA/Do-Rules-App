@@ -57,8 +57,16 @@
 
                         <div class="pt-2">
                             <button type="submit"
-                                class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-teal-500/20">
-                                {{ $isEdit ? 'Simpan Perubahan' : 'Daftarkan Kelas' }}
+                                wire:loading.attr="disabled"
+                                class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-teal-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                                <span wire:loading.remove wire:target="save">{{ $isEdit ? 'Simpan Perubahan' : 'Daftarkan Kelas' }}</span>
+                                <span wire:loading wire:target="save" class="flex items-center gap-2">
+                                    <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Memproses...
+                                </span>
                             </button>
                         </div>
                     </form>
@@ -128,7 +136,6 @@
                                                 </svg>
                                             </button>
                                             <button
-                                                onclick="confirm('Hapus kelas ini?') || event.stopImmediatePropagation()"
                                                 wire:click="delete({{ $class->id }})"
                                                 class="p-2 text-rose-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-all">
                                                 <svg class="w-5 h-5" fill="none" stroke="currentColor"

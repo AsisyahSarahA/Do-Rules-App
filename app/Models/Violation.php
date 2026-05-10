@@ -13,6 +13,7 @@ class Violation extends Model
         'verified_by',
         'notes',
         'status',
+        'evidence',
     ];
 
     /*

@@ -8,14 +8,24 @@ use App\Models\ClassRoom;
 use App\Models\ParentModel;
 use Livewire\Attributes\Layout;
 
+use Livewire\Attributes\On;
+use Livewire\WithPagination;
+
 #[Layout('layouts.app')]
 
 class ManageStudents extends Component
 {
+    use WithPagination;
+
     public $name, $nis, $class_id, $parent_id, $studentId;
     public $search = '';
     public $isEdit = false;
     public $showForm = false;
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
 
     public function save()
     {
@@ -37,6 +47,7 @@ class ManageStudents extends Component
 
         $this->resetForm();
         $this->showForm = false;
+        $this->dispatch('success', message: 'Data siswa berhasil disimpan!');
     }
 
     public function edit($id)
@@ -55,7 +66,14 @@ class ManageStudents extends Component
 
     public function delete($id)
     {
+        $this->dispatch('confirmDelete', id: $id);
+    }
+
+    #[On('deleteConfirmed')]
+    public function deleteConfirmed($id)
+    {
         Student::find($id)?->delete();
+        $this->dispatch('success', message: 'Data siswa berhasil dihapus!');
     }
 
     public function resetForm()
@@ -66,13 +84,13 @@ class ManageStudents extends Component
 
     public function render()
     {
-    $students = Student::with(['classRoom', 'parent'])
+        $students = Student::with(['classRoom', 'parent'])
             ->when($this->search, function ($q) {
                 $q->where('name', 'like', '%' . $this->search . '%')
                   ->orWhere('nis', 'like', '%' . $this->search . '%');
             })
             ->latest()
-            ->get();
+            ->paginate(10);
 
         $classes = ClassRoom::all();
         $parents = ParentModel::all();

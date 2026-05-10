@@ -8,6 +8,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use Livewire\Attributes\Layout;
 use App\Models\Student;
+use Livewire\Attributes\On;
 
 #[Layout('layouts.app')] // lebih konsisten
 
@@ -47,7 +48,7 @@ class ManageClasses extends Component
             ]
         );
 
-        session()->flash('message', 'Data berhasil disimpan');
+        $this->dispatch('success', message: 'Data kelas berhasil disimpan!');
 
         $this->resetForm();
         $this->showForm = false;
@@ -70,9 +71,14 @@ class ManageClasses extends Component
     // ✅ DELETE
     public function delete($id)
     {
-        ClassRoom::find($id)?->delete();
+        $this->dispatch('confirmDelete', id: $id);
+    }
 
-        session()->flash('message', 'Data berhasil dihapus');
+    #[On('deleteConfirmed')]
+    public function deleteConfirmed($id)
+    {
+        ClassRoom::find($id)?->delete();
+        $this->dispatch('success', message: 'Data kelas berhasil dihapus!');
     }
 
     // ✅ RESET FORM

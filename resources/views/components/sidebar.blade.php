@@ -4,8 +4,7 @@
             'admin.rules',
             'admin.students',
             'admin.teachers',
-            'admin.parents',
-            'admin.violations'
+            'admin.parents'
         ) ? 'true' : 'false' }}
     }">
 
@@ -76,8 +75,7 @@
                         'admin.rules',
                         'admin.students',
                         'admin.teachers',
-                        'admin.parents',
-                        'admin.violations'
+                        'admin.parents'
                     )
                         ? 'text-donezo-text font-bold bg-gray-50'
                         : 'text-gray-500 font-medium hover:text-donezo-text hover:bg-gray-50'
@@ -91,8 +89,7 @@
                                 'admin.rules',
                                 'admin.students',
                                 'admin.teachers',
-                                'admin.parents',
-                                'admin.violations'
+                                'admin.parents'
                             )
                                 ? 'text-donezo-primary'
                                 : 'text-gray-400'
@@ -157,15 +154,38 @@
                         Data Orang Tua
                     </a>
 
-                    <a href="{{ route('admin.violations') }}" class="block px-3 py-2 text-sm rounded-lg
-                        {{ request()->routeIs('admin.violations')
-                            ? 'text-donezo-primary font-bold bg-teal-50'
-                            : 'text-gray-500 hover:text-donezo-text hover:bg-gray-50'
-                        }} transition-colors">
-                        Input Pelanggaran
-                    </a>
-
                 </div>
+            </div>
+
+            <!-- INPUT PELANGGARAN -->
+            <div class="relative group">
+
+                <div class="absolute -left-4 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-donezo-primary rounded-r-md
+                    {{ request()->routeIs('admin.violations') ? 'block' : 'hidden' }}">
+                </div>
+
+                <a href="{{ route('admin.violations') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg
+                    {{ request()->routeIs('admin.violations')
+                        ? 'text-donezo-text font-bold bg-gray-50'
+                        : 'text-gray-500 font-medium hover:text-donezo-text hover:bg-gray-50'
+                    }} transition-colors">
+
+                    <div class="flex items-center gap-3">
+
+                        <svg class="w-5 h-5
+                            {{ request()->routeIs('admin.violations')
+                                ? 'text-donezo-primary'
+                                : 'text-gray-400'
+                            }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M18.364 5.364a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.364-9.364z">
+                            </path>
+                        </svg>
+
+                        <span>Input Pelanggaran</span>
+                    </div>
+                </a>
             </div>
 
             <!-- VERIFIKASI -->

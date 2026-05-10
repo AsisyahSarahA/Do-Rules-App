@@ -7,13 +7,23 @@ use App\Models\ParentModel;
 use App\Models\Student;
 use Livewire\Attributes\Layout;
 
+use Livewire\WithPagination;
+use Livewire\Attributes\On;
+
 #[Layout('layouts.app')]
 class ManageParents extends Component
 {
+    use WithPagination;
+
     public $name, $phone, $address, $email, $student_id, $parentId;
     public $isEdit = false;
     public $search = '';
     public $showForm = false; // ✅ FIX DISI
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
 
     public function save()
     {
@@ -34,7 +44,7 @@ class ManageParents extends Component
             ]
         );
 
-        session()->flash('success', 'Data parent berhasil disimpan ✅');
+        $this->dispatch('success', message: 'Data orang tua berhasil disimpan!');
 
         $this->resetForm();
     }
@@ -55,9 +65,14 @@ class ManageParents extends Component
 
     public function delete($id)
     {
-        ParentModel::find($id)?->delete();
+        $this->dispatch('confirmDelete', id: $id);
+    }
 
-        session()->flash('success', 'Data parent berhasil dihapus ❌');
+    #[On('deleteConfirmed')]
+    public function deleteConfirmed($id)
+    {
+        ParentModel::find($id)?->delete();
+        $this->dispatch('success', message: 'Data orang tua berhasil dihapus!');
     }
 
     public function resetForm()
@@ -72,7 +87,7 @@ class ManageParents extends Component
             'parents' => ParentModel::with('students')
                 ->where('name', 'like', '%' . $this->search . '%')
                 ->latest()
-                ->get(),
+                ->paginate(10),
 
 
             'students' => Student::all()

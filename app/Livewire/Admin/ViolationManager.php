@@ -10,11 +10,14 @@ use Livewire\Attributes\Layout;
 use Livewire\WithFileUploads;
 use Illuminate\Support\Facades\Storage;
 
+use Livewire\WithPagination;
+use Livewire\Attributes\On;
+
 #[Layout('layouts.app')]
 
 class ViolationManager extends Component
 {
-    use WithFileUploads;
+    use WithFileUploads, WithPagination;
 
     // FORM
     public $showForm = false;
@@ -24,11 +27,16 @@ class ViolationManager extends Component
     public $notes;
     public $evidence;
 
-    // SEARCH
+    // SEARCH & FILTERS
     public $search = '';
+    public $filterDay;
+    public $filterWeek;
+    public $filterMonth;
+    public $filterYear;
 
     // DETAIL MODAL
     public $selectedViolation = null;
+    public $showDetailModal = false;
 
     protected $rules = [
         'student_id' => 'required|exists:students,id',
@@ -43,6 +51,26 @@ class ViolationManager extends Component
         'evidence.image' => 'File harus berupa gambar',
         'evidence.max' => 'Ukuran gambar maksimal 2MB',
     ];
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedFilterDay() { $this->resetPage(); }
+    public function updatedFilterWeek() { $this->resetPage(); }
+    public function updatedFilterMonth() { $this->resetPage(); }
+    public function updatedFilterYear() { $this->resetPage(); }
+    
+    public function updatedEvidence()
+    {
+        try {
+            $this->validateOnly('evidence');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->dispatch('error', message: $e->getMessage());
+            $this->reset('evidence');
+        }
+    }
 
     /*
     |--------------------------------------------------------------------------
@@ -73,10 +101,7 @@ class ViolationManager extends Component
             'status' => 'pending',
         ]);
 
-        session()->flash(
-            'message',
-            'Pelanggaran berhasil ditambahkan'
-        );
+        $this->dispatch('success', message: 'Laporan pelanggaran berhasil ditambahkan!');
 
         $this->reset([
             'student_id',
@@ -102,6 +127,14 @@ class ViolationManager extends Component
             'reporter',
             'verifier'
         ])->findOrFail($id);
+
+        $this->showDetailModal = true;
+    }
+
+    public function closeModal()
+    {
+        $this->showDetailModal = false;
+        $this->selectedViolation = null;
     }
 
     /*
@@ -112,20 +145,18 @@ class ViolationManager extends Component
 
     public function delete($id)
     {
+        $this->dispatch('confirmDelete', id: $id);
+    }
+
+    #[On('deleteConfirmed')]
+    public function deleteConfirmed($id)
+    {
         $violation = Violation::findOrFail($id);
-
         if ($violation->evidence) {
-
-            Storage::disk('public')
-                ->delete($violation->evidence);
+            Storage::disk('public')->delete($violation->evidence);
         }
-
         $violation->delete();
-
-        session()->flash(
-            'message',
-            'Data berhasil dihapus'
-        );
+        $this->dispatch('success', message: 'Data pelanggaran berhasil dihapus!');
     }
 
     /*
@@ -147,9 +178,7 @@ class ViolationManager extends Component
             'verifier'
         ])
             ->when($this->search, function ($query) {
-
                 $query->whereHas('student', function ($q) {
-
                     $q->where(
                         'name',
                         'like',
@@ -157,8 +186,23 @@ class ViolationManager extends Component
                     );
                 });
             })
+            ->when($this->filterDay, function ($query) {
+                $query->whereDate('created_at', $this->filterDay);
+            })
+            ->when($this->filterWeek, function ($query) {
+                $query->whereBetween('created_at', [
+                    \Carbon\Carbon::parse($this->filterWeek)->startOfWeek(),
+                    \Carbon\Carbon::parse($this->filterWeek)->endOfWeek()
+                ]);
+            })
+            ->when($this->filterMonth, function ($query) {
+                $query->whereMonth('created_at', $this->filterMonth);
+            })
+            ->when($this->filterYear, function ($query) {
+                $query->whereYear('created_at', $this->filterYear);
+            })
             ->latest()
-            ->get();
+            ->paginate(10);
 
         return view(
             'livewire.admin.violation-manager',

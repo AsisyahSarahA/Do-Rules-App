@@ -25,24 +25,7 @@
         </div>
     </div>
 
-    @if (session()->has('message'))
-        <div class="mb-6 animate-in fade-in slide-in-from-top-4 duration-300">
-            <div
-                class="bg-teal-50 border border-teal-100 text-teal-700 px-6 py-4 rounded-2xl flex items-center gap-3 shadow-sm">
-
-                <svg class="w-5 h-5 text-teal-500" fill="none" stroke="currentColor"
-                    viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z">
-                    </path>
-                </svg>
-
-                <span class="font-semibold text-sm">
-                    {{ session('message') }}
-                </span>
-            </div>
-        </div>
-    @endif
+    {{-- Replaced with global toast --}}
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
@@ -113,9 +96,16 @@
                         {{-- BUTTON --}}
                         <div class="pt-2">
                             <button type="submit"
-                                class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-teal-500/20">
-
-                                {{ $isEdit ? 'Update' : 'Simpan' }}
+                                wire:loading.attr="disabled"
+                                class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-teal-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                                <span wire:loading.remove wire:target="save">{{ $isEdit ? 'Update' : 'Simpan' }}</span>
+                                <span wire:loading wire:target="save" class="flex items-center gap-2">
+                                    <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                    Memproses...
+                                </span>
                             </button>
                         </div>
 
@@ -276,7 +266,6 @@
 
                                             {{-- DELETE --}}
                                             <button
-                                                onclick="confirm('Hapus data orang tua ini?') || event.stopImmediatePropagation()"
                                                 wire:click="delete({{ $parent->id }})"
                                                 class="p-2 text-rose-400 hover:bg-rose-50 rounded-lg transition-all"
                                                 title="Hapus Data">
@@ -311,6 +300,11 @@
                         </tbody>
                     </table>
                 </div>
+
+                <div class="p-8 border-t border-gray-50 bg-gray-50/30">
+                    {{ $parents->links() }}
+                </div>
+
             </div>
         </div>
     </div>

@@ -22,11 +22,11 @@
 <body class="font-sans antialiased text-slate-600 bg-white selection:bg-teal-500 selection:text-white" x-data="{ scrolled: false }" @scroll.window="scrolled = (window.pageYOffset > 20)">
 
     <!-- Navbar -->
-    <nav :class="{ 'bg-white/90 backdrop-blur-md shadow-md': scrolled, 'bg-transparent': !scrolled }" 
+    <nav :class="{ 'bg-white/90 backdrop-blur-md shadow-md': scrolled, 'bg-transparent': !scrolled }"
          class="fixed w-full z-50 transition-all duration-300 px-6 py-4"
          x-data="{ mobileMenuOpen: false }">
         <div class="max-w-7xl mx-auto flex justify-between items-center">
-            
+
             <!-- Logo -->
             <a href="/" class="flex items-center gap-2 group">
                 <div :class="{ 'bg-teal-500/10 border-teal-500/20': scrolled, 'bg-white/10 border-white/20': !scrolled }" class="w-10 h-10 rounded-xl flex items-center justify-center border transition-colors group-hover:scale-105">
@@ -61,7 +61,7 @@
         </div>
 
         <!-- Mobile Menu -->
-        <div x-show="mobileMenuOpen" 
+        <div x-show="mobileMenuOpen"
              x-collapse
              x-cloak
              class="md:hidden absolute top-full left-0 w-full bg-white shadow-lg border-t border-slate-100">
@@ -70,9 +70,9 @@
                 <a href="#features" @click="mobileMenuOpen = false" class="text-base font-medium text-slate-600">Fitur</a>
                 <a href="#how-it-works" @click="mobileMenuOpen = false" class="text-base font-medium text-slate-600">Cara Kerja</a>
                 <a href="#testimonials" @click="mobileMenuOpen = false" class="text-base font-medium text-slate-600">Testimoni</a>
-                
+
                 <hr class="border-slate-100 my-2">
-                
+
                 @auth
                     <x-ui.button href="{{ url('/dashboard') }}" variant="primary" class="w-full">Dashboard</x-ui.button>
                 @else
@@ -85,7 +85,7 @@
 
     <!-- Main Content -->
     <main>
-        {{ $slot }}
+        {{ $slot }}  
     </main>
 
     <!-- Footer -->

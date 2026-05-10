@@ -8,13 +8,24 @@ use Livewire\Attributes\Layout;
 use App\Models\User;
 
 
+use Livewire\WithPagination;
+use Livewire\Attributes\On;
+
+
 #[Layout('layouts.app')]
 class ManageTeachers extends Component
 {
+    use WithPagination;
+
     public $name, $nip, $phone, $email, $teacherId;
     public $isEdit = false;
     public $showForm = false;
     public $search = '';
+
+    public function updatedSearch()
+    {
+        $this->resetPage();
+    }
 
     // ================= SAVE =================
     public function save()
@@ -36,7 +47,7 @@ class ManageTeachers extends Component
             ]
         );
 
-        session()->flash('message', 'Data guru berhasil disimpan');
+        $this->dispatch('success', message: 'Data guru berhasil disimpan!');
 
         $this->resetForm();
     }
@@ -59,9 +70,14 @@ class ManageTeachers extends Component
     // ================= DELETE =================
     public function delete($id)
     {
-        Teacher::findOrFail($id)->delete();
+        $this->dispatch('confirmDelete', id: $id);
+    }
 
-        session()->flash('message', 'Data guru dihapus');
+    #[On('deleteConfirmed')]
+    public function deleteConfirmed($id)
+    {
+        Teacher::find($id)?->delete();
+        $this->dispatch('success', message: 'Data guru berhasil dihapus!');
     }
 
     // ================= RESET =================
@@ -80,7 +96,7 @@ class ManageTeachers extends Component
                 $q->where('name', 'like', '%' . $this->search . '%');
             })
             ->latest()
-            ->get();
+            ->paginate(10);
 
         return view('livewire.admin.manage-teachers', [
             'teachers' => $teachers
@@ -92,7 +108,7 @@ class ManageTeachers extends Component
         $user = User::findOrFail($id);
         $user->update(['role' => $role]);
 
-        session()->flash('message', 'Role berhasil diupdate');
+        $this->dispatch('success', message: 'Role berhasil diupdate!');
     }
 
 }

@@ -17,7 +17,7 @@ class VerifyViolations extends Component
         app(\App\Http\Controllers\VerificationController::class)
             ->verify($id);
 
-        session()->flash('message', 'Berhasil diverifikasi');
+        $this->dispatch('success', message: 'Pelanggaran berhasil diverifikasi!');
     }
 
     public function render()
