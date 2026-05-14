@@ -30,7 +30,6 @@ class ManageParents extends Component
         $this->validate([
             'name' => 'required',
             'phone' => 'required',
-            'student_id' => 'required'
         ]);
 
         ParentModel::updateOrCreate(
@@ -40,7 +39,6 @@ class ManageParents extends Component
                 'phone' => $this->phone,
                 'address' => $this->address,
                 'email' => $this->email,
-                'student_id' => $this->student_id
             ]
         );
 

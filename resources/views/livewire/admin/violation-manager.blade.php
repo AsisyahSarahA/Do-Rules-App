@@ -13,8 +13,8 @@
             </p>
         </div>
 
-        <button wire:click="$toggle('showForm')"
-            class="bg-teal-500 hover:bg-teal-600 text-white px-6 py-3 rounded-2xl font-bold shadow-lg shadow-teal-500/20 transition-all">
+        <button wire:click="{{ $showForm ? 'resetForm' : '$set(\'showForm\', true)' }}"
+            class="{{ $showForm ? 'bg-slate-200 text-slate-600' : 'bg-teal-500 text-white' }} px-6 py-3 rounded-2xl font-bold shadow-lg transition-all">
             {{ $showForm ? 'Tutup Form' : '+ Tambah Pelanggaran' }}
         </button>
 
@@ -32,7 +32,7 @@
             <div class="bg-white rounded-[2rem] p-8 shadow-sm border border-gray-100">
 
                 <h3 class="text-xl font-black text-slate-800 mb-8">
-                    Input Pelanggaran
+                    {{ $isEdit ? 'Edit Pelanggaran' : 'Input Pelanggaran' }}
                 </h3>
 
                 <form wire:submit.prevent="save" class="space-y-5">
@@ -116,18 +116,27 @@
 
                     </div>
 
-                    <button type="submit"
-                        wire:loading.attr="disabled"
-                        class="w-full bg-teal-500 hover:bg-teal-600 text-white py-4 rounded-2xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
-                        <span wire:loading.remove wire:target="save">Simpan Pelanggaran</span>
-                        <span wire:loading wire:target="save" class="flex items-center gap-2">
-                            <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Memproses...
-                        </span>
-                    </button>
+                    <div class="flex flex-col gap-3">
+                        <button type="submit"
+                            wire:loading.attr="disabled"
+                            class="w-full bg-teal-500 hover:bg-teal-600 text-white py-4 rounded-2xl font-bold transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
+                            <span wire:loading.remove wire:target="save">{{ $isEdit ? 'Update Pelanggaran' : 'Simpan Pelanggaran' }}</span>
+                            <span wire:loading wire:target="save" class="flex items-center gap-2">
+                                <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Memproses...
+                            </span>
+                        </button>
+
+                        @if($isEdit)
+                        <button type="button" wire:click="resetForm"
+                            class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 py-4 rounded-2xl font-bold transition-all">
+                            Batal Edit
+                        </button>
+                        @endif
+                    </div>
 
                 </form>
 
@@ -262,7 +271,28 @@
 
                                 </td>
 
-                                <td class="px-8 py-5 text-center">
+                                <td class="px-8 py-5 text-center flex items-center justify-center gap-2">
+
+                                    {{-- Edit Button (Only if within 24 hours) --}}
+                                    @if($violation->created_at->diffInHours(now()) < 24)
+                                    <button wire:click.stop="edit({{ $violation->id }})"
+                                        class="p-2.5 text-blue-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all"
+                                        title="Edit Data">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+                                            </path>
+                                        </svg>
+                                    </button>
+                                    @else
+                                    <div class="p-2.5 text-gray-300 cursor-not-allowed" title="Sudah lewat 24 jam (Tidak bisa edit)">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    @endif
 
                                     <button wire:click.stop="delete({{ $violation->id }})"
                                         class="p-2.5 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-all"

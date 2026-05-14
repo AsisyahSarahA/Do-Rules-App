@@ -52,6 +52,7 @@
                                 type="text"
                                 placeholder="Misal: Bapak Heru Sulistyo"
                                 class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all">
+                            @error('name') <span class="text-xs text-rose-500 ml-1">{{ $message }}</span> @enderror
                         </div>
 
                         {{-- PHONE --}}
@@ -65,6 +66,7 @@
                                 type="text"
                                 placeholder="Misal: 0812xxxx"
                                 class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all">
+                            @error('phone') <span class="text-xs text-rose-500 ml-1">{{ $message }}</span> @enderror
                         </div>
 
                         {{-- EMAIL --}}
@@ -78,6 +80,7 @@
                                 type="email"
                                 placeholder="wali@email.com"
                                 class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all">
+                            @error('email') <span class="text-xs text-rose-500 ml-1">{{ $message }}</span> @enderror
                         </div>
 
                         {{-- ADDRESS --}}
@@ -91,6 +94,7 @@
                                 placeholder="Masukkan alamat domisili..."
                                 rows="3"
                                 class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all resize-none"></textarea>
+                            @error('address') <span class="text-xs text-rose-500 ml-1">{{ $message }}</span> @enderror
                         </div>
 
                         {{-- BUTTON --}}

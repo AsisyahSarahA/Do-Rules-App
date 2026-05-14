@@ -26,6 +26,8 @@ class ViolationManager extends Component
     public $rule_id;
     public $notes;
     public $evidence;
+    public $violationId;
+    public $isEdit = false;
 
     // SEARCH & FILTERS
     public $search = '';
@@ -78,39 +80,87 @@ class ViolationManager extends Component
     |--------------------------------------------------------------------------
     */
 
+    public function edit($id)
+    {
+        $violation = Violation::findOrFail($id);
+
+        if ($violation->created_at->diffInHours(now()) >= 24) {
+            $this->dispatch('error', message: 'Data tidak dapat diedit setelah 24 jam.');
+            return;
+        }
+
+        $this->violationId = $id;
+        $this->student_id = $violation->student_id;
+        $this->rule_id = $violation->rule_id;
+        $this->notes = $violation->notes;
+
+        $this->isEdit = true;
+        $this->showForm = true;
+    }
+
     public function save()
     {
         $this->validate();
 
-        $evidencePath = null;
+        if ($this->isEdit) {
+            $violation = Violation::findOrFail($this->violationId);
 
-        if ($this->evidence) {
+            if ($violation->created_at->diffInHours(now()) >= 24) {
+                $this->dispatch('error', message: 'Gagal update! Batas waktu 24 jam telah terlewati.');
+                $this->resetForm();
+                return;
+            }
 
-            $evidencePath = $this->evidence->store(
-                'violations',
-                'public'
-            );
+            $evidencePath = $violation->evidence;
+
+            if ($this->evidence) {
+                if ($violation->evidence) {
+                    Storage::disk('public')->delete($violation->evidence);
+                }
+                $evidencePath = $this->evidence->store('violations', 'public');
+            }
+
+            $violation->update([
+                'student_id' => $this->student_id,
+                'rule_id' => $this->rule_id,
+                'notes' => $this->notes,
+                'evidence' => $evidencePath,
+            ]);
+
+            $this->dispatch('success', message: 'Laporan pelanggaran berhasil diperbarui!');
+        } else {
+            $evidencePath = null;
+
+            if ($this->evidence) {
+                $evidencePath = $this->evidence->store('violations', 'public');
+            }
+
+            Violation::create([
+                'student_id' => $this->student_id,
+                'rule_id' => $this->rule_id,
+                'reported_by' => auth()->id(),
+                'notes' => $this->notes,
+                'evidence' => $evidencePath,
+                'status' => 'pending',
+            ]);
+
+            $this->dispatch('success', message: 'Laporan pelanggaran berhasil ditambahkan!');
         }
 
-        Violation::create([
-            'student_id' => $this->student_id,
-            'rule_id' => $this->rule_id,
-            'reported_by' => auth()->id(),
-            'notes' => $this->notes,
-            'evidence' => $evidencePath,
-            'status' => 'pending',
-        ]);
+        $this->resetForm();
+    }
 
-        $this->dispatch('success', message: 'Laporan pelanggaran berhasil ditambahkan!');
-
+    public function resetForm()
+    {
         $this->reset([
             'student_id',
             'rule_id',
             'notes',
-            'evidence'
+            'evidence',
+            'violationId',
+            'isEdit',
+            'showForm'
         ]);
-
-        $this->showForm = false;
     }
 
     /*
