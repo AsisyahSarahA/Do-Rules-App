@@ -27,12 +27,12 @@ new #[Layout('components.layouts.auth')] class extends Component
 
         // Redirect berdasarkan role
         if ($user->role === 'admin') {
-            $this->redirect(route('admin.dashboard', absolute: false), navigate: true);
+            $this->redirect(route('admin.dashboard', absolute: false));
             return;
         }
 
         // Default redirect for other roles (guru, piket, siswa, etc.)
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        $this->redirectIntended(default: route('dashboard', absolute: false));
     }
 }; ?>
 

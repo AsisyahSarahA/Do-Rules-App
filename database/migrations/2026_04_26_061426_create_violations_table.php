@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('student_id')->constrained();
             $table->foreignId('rule_id')->constrained();
             $table->foreignId('reported_by')->constrained('users');
-            $table->foreignId('verified_by')->nullable()->constrained('users');
+            // $table->foreignId('verified_by')->nullable()->constrained('users');
             $table->text('notes')->nullable();
             $table->enum('status', ['pending', 'verified', 'processed', 'done']);
             $table->timestamps();
