@@ -13,12 +13,20 @@ return new class extends Migration
     {
         Schema::create('violations', function (Blueprint $table) {
             $table->id();
+
+            // Foreign Keys / Relasi
             $table->foreignId('student_id')->constrained();
             $table->foreignId('rule_id')->constrained();
             $table->foreignId('reported_by')->constrained('users');
-            // $table->foreignId('verified_by')->nullable()->constrained('users');
+            $table->foreignId('verified_by')->nullable()->constrained('users')->nullOnDelete();
+
+            // Data Pelanggaran
             $table->text('notes')->nullable();
-            $table->enum('status', ['pending', 'verified', 'processed', 'done']);
+            $table->string('evidence')->nullable(); // Kolom bukti langsung di sini
+
+            // Status & Jejak Waktu
+            $table->enum('status', ['pending', 'diverifikasi', 'ditolak'])->default('pending');
+            $table->timestamp('verified_at')->nullable(); // Kolom waktu verifikasi langsung di sini
             $table->timestamps();
         });
     }

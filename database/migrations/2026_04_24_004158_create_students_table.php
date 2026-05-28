@@ -13,13 +13,15 @@ return new class extends Migration
     {
         Schema::create('students', function (Blueprint $table) {
             $table->id();
+            // Menghubungkan siswa dengan tabel users (jika user dihapus, data siswa ikut terhapus)
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
             $table->string('name');
             $table->string('nis')->unique();
-           $table->foreignId('class_id')
+            $table->foreignId('class_id')
                 ->nullable()
                 ->constrained('classes')
                 ->nullOnDelete();
-           $table->foreignId('parent_id')
+            $table->foreignId('parent_id')
                 ->nullable()
                 ->constrained('parents')
                 ->nullOnDelete();

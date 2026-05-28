@@ -1,156 +1,60 @@
-<div class="p-6 lg:p-10 bg-[#FAFBFC] min-h-screen">
-    <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-        <div>
-            <h2 class="text-3xl font-bold text-slate-800 tracking-tight mb-1">Manajemen Siswa</h2>
-            <p class="text-sm text-gray-500 font-medium">Kelola data siswa, NIS, kelas, dan informasi orang tua.</p>
-        </div>
-        <div class="flex items-center gap-3">
-            <button wire:click="$toggle('showForm')" 
-                class="bg-teal-500 hover:bg-teal-800 text-white text-sm font-semibold px-6 py-2.5 rounded-full flex items-center gap-2 transition-all shadow-md active:scale-95">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $showForm ? 'M20 12H4' : 'M12 4v16m8-8H4' }}"></path>
+<form wire:submit.prevent="save" class="space-y-5">
+    <div>
+        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Nama Lengkap</label>
+        <input wire:model="name" type="text" placeholder="Misal: Ahmad Fauzi"
+            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all">
+        @error('name') <span class="text-xs text-rose-500 mt-1 block ml-1">{{ $message }}</span> @enderror
+    </div>
+
+    <div>
+        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Email (Untuk Login)</label>
+        <input wire:model="email" type="email" placeholder="Misal: echa@siswa.com"
+            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all">
+        @error('email') <span class="text-xs text-rose-500 mt-1 block ml-1">{{ $message }}</span> @enderror
+    </div>
+
+    <div>
+        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">NIS</label>
+        <input wire:model="nis" type="text" placeholder="Misal: 12345678"
+            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all">
+        @error('nis') <span class="text-xs text-rose-500 mt-1 block ml-1">{{ $message }}</span> @enderror
+    </div>
+
+    <div>
+        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Kelas</label>
+        <select wire:model="class_id"
+            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all appearance-none">
+            <option value="">Pilih Kelas...</option>
+            @foreach($classes as $class)
+                <option value="{{ $class->id }}">{{ $class->name }}</option>
+            @endforeach
+        </select>
+        @error('class_id') <span class="text-xs text-rose-500 mt-1 block ml-1">{{ $message }}</span> @enderror
+    </div>
+
+    <div>
+        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Orang Tua / Wali</label>
+        <select wire:model="parent_id"
+            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all appearance-none">
+            <option value="">Pilih Orang Tua...</option>
+            @foreach($parents as $parent)
+                <option value="{{ $parent->id }}">{{ $parent->name }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="pt-2">
+        <button type="submit"
+            wire:loading.attr="disabled"
+            class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-teal-500/20 disabled:opacity-50 disabled:cursor-not-allowed group flex items-center justify-center gap-2">
+            <span wire:loading.remove wire:target="save">{{ $isEdit ? 'Simpan Perubahan' : 'Daftarkan Siswa' }}</span>
+            <span wire:loading wire:target="save" class="flex items-center gap-2">
+                <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                {{ $showForm ? 'Tutup Form' : 'Tambah Siswa' }}
-            </button>
-        </div>
+                Memproses...
+            </span>
+        </button>
     </div>
-
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        @if($showForm)
-        <div class="lg:col-span-4 animate-in fade-in slide-in-from-left-4 duration-300">
-            <div class="bg-white border border-gray-100 rounded-[2rem] p-8 shadow-sm sticky top-8">
-                <h3 class="text-lg font-bold text-slate-800 mb-6">{{ $isEdit ? 'Update Siswa' : 'Input Siswa Baru' }}</h3>
-                
-                <form wire:submit.prevent="save" class="space-y-5">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Nama Lengkap</label>
-                        <input wire:model="name" type="text" placeholder="Misal: Ahmad Fauzi" 
-                            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">NIS</label>
-                        <input wire:model="nis" type="text" placeholder="Misal: 12345678" 
-                            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Kelas</label>
-                        <select wire:model="class_id" 
-                            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all appearance-none">
-                            <option value="">Pilih Kelas...</option>
-                            @foreach($classes as $class)
-                                <option value="{{ $class->id }}">{{ $class->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-2 ml-1">Orang Tua / Wali</label>
-                        <select wire:model="parent_id" 
-                            class="w-full px-5 py-3.5 bg-gray-50 border-none focus:ring-2 focus:ring-teal-900/10 rounded-2xl text-sm transition-all appearance-none">
-                            <option value="">Pilih Orang Tua...</option>
-                            @foreach($parents as $parent)
-                                <option value="{{ $parent->id }}">{{ $parent->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <div class="pt-2">
-                        <button type="submit" 
-                            wire:loading.attr="disabled"
-                            class="w-full bg-teal-500 hover:bg-teal-600 text-white font-bold py-4 rounded-2xl transition-all shadow-lg shadow-teal-500/20 disabled:opacity-50 disabled:cursor-not-allowed group flex items-center justify-center gap-2">
-                            <span wire:loading.remove wire:target="save">{{ $isEdit ? 'Simpan Perubahan' : 'Daftarkan Siswa' }}</span>
-                            <span wire:loading wire:target="save" class="flex items-center gap-2">
-                                <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                Memproses...
-                            </span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-        @endif
-
-        <div class="{{ $showForm ? 'lg:col-span-8' : 'lg:col-span-12' }} transition-all duration-300">
-            <div class="bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden">
-                <div class="p-6 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <div class="relative w-full sm:w-64">
-                        <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                        </span>
-                        <input wire:model.live="search" type="text" placeholder="Cari siswa..." 
-                            class="w-full pl-10 pr-4 py-2 bg-gray-50 border-none rounded-full text-sm focus:ring-2 focus:ring-teal-900/10">
-                    </div>
-                </div>
-
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr class="text-[11px] font-bold text-gray-400 uppercase tracking-[0.2em] bg-gray-50/50">
-                                <th class="px-8 py-5">Siswa</th>
-                                <th class="px-8 py-5">NIS</th>
-                                <th class="px-8 py-5">Kelas</th>
-                                <th class="px-8 py-5">Point</th>
-                                <th class="px-8 py-5 text-center">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-50">
-                            @forelse($students as $student)
-                            <tr class="group hover:bg-gray-50/50 transition-all">
-                                <td class="px-8 py-5">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold text-xs transition-transform group-hover:scale-110">
-                                            {{ strtoupper(substr($student->name, 0, 1)) }}
-                                        </div>
-                                        <div class="flex flex-col">
-                                            <span class="font-bold text-slate-700 leading-tight group-hover:text-teal-600 transition-colors">{{ $student->name }}</span>
-                                            <span class="text-[10px] text-gray-400 mt-1 uppercase tracking-wider font-semibold">Wali: {{ $student->parent->name ?? '-' }}</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5 text-sm text-gray-600 font-medium">
-                                    {{ $student->nis }}
-                                </td>
-                                <td class="px-8 py-5">
-                                    <span class="px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-[10px] font-bold">
-                                        {{ $student->classRoom->name ?? '-' }}
-                                    </span>
-                                </td>
-                                <td class="px-8 py-5">
-                                    <div class="flex items-center gap-2">
-                                        <div class="w-2 h-2 rounded-full {{ $student->total_points > 50 ? 'bg-rose-500' : 'bg-emerald-500' }}"></div>
-                                        <span class="font-bold text-slate-700">{{ $student->total_points }}</span>
-                                    </div>
-                                </td>
-                                <td class="px-8 py-5 text-center">
-                                    <div class="flex justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                                        <button wire:click="edit({{ $student->id }})" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-all" title="Edit Siswa">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-5M18.364 5.364a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.364-9.364z"></path></svg>
-                                        </button>
-                                        <button wire:click="delete({{ $student->id }})" class="p-2 text-rose-400 hover:bg-rose-50 rounded-lg transition-all" title="Hapus Siswa">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                        </button>
-                                    </div>
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="5" class="px-8 py-20 text-center text-gray-400 italic">Belum ada data siswa.</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="p-8 border-t border-gray-50 bg-gray-50/30">
-                    {{ $students->links() }}
-                </div>
-
-            </div>
-        </div>
-    </div>
-</div>
+</form>

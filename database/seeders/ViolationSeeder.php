@@ -23,3 +23,4 @@ class ViolationSeeder extends Seeder
         ]);
     }
 }
+        

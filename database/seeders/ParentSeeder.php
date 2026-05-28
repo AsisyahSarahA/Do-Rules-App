@@ -14,15 +14,15 @@ class ParentSeeder extends Seeder
         $student2 = Student::skip(1)->first();
 
         ParentModel::create([
-            'name' => 'Bapak Budi',
+            'name' => 'Edy Diana',
             'phone' => '08123456789',
-            'address' => 'Tasikmalaya',
+            'address' => 'Ciamis',
         ]);
 
         ParentModel::create([
-            'name' => 'Ibu Siti',
+            'name' => 'Siti Maspiroh',
             'phone' => '08987654321',
-            'address' => 'Bandung',
+            'address' => 'Sumedang',
         ]);
     }
 }

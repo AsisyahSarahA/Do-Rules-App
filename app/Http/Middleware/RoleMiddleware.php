@@ -17,18 +17,28 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
+        // 1. Pastikan user sudah login
         if (!Auth::check()) {
             return redirect()->route('login');
         }
 
         $user = Auth::user();
 
-        // Jika user memiliki salah satu dari role yang diizinkan
-        if (in_array($user->role, $roles)) {
+        // Buat array penampung role milik user
+        $userRoles = [$user->role];
+
+        // 2. Optimasi: Hanya cek piket jika role aslinya adalah 'guru'
+        // dan pastikan method isPiketToday() memang ada di model User
+        if ($user->role === 'guru' && method_exists($user, 'isPiketToday') && $user->isPiketToday()) {
+            $userRoles[] = 'piket';
+        }
+
+        // 3. Jika user memiliki salah satu dari role yang diizinkan di route
+        if (count(array_intersect($userRoles, $roles)) > 0) {
             return $next($request);
         }
 
-        // Jika role tidak diizinkan, redirect ke dashboard default sesuai rolenya
-        return abort(403, 'Unauthorized Access.');
+        // 4. Jika tidak memiliki akses, lempar ke 403
+        abort(403, 'Unauthorized Access.');
     }
 }

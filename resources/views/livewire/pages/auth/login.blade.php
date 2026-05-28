@@ -14,25 +14,35 @@ new #[Layout('components.layouts.auth')] class extends Component
      */
     public function login(): void
     {
-        $this->validate();
+        // 1. PERBAIKAN: Validasi diarahkan ke form object agar tidak MissingRulesException
+        $this->form->validate();
 
+        // 2. Jalankan autentikasi (cek email & password)
         $this->form->authenticate();
 
         Session::regenerate();
 
         $user = auth()->user();
-        
+
         // Simpan pesan sapaan ke session
         session()->flash('welcome_message', "Selamat datang, {$user->name}! 👋");
 
-        // Redirect berdasarkan role
+        // 3. LOGIKA REDIRECT CUSTOM BERDASARKAN ROLE & DATA
+
+        // JALUR 1: Jika dia Admin
         if ($user->role === 'admin') {
-            $this->redirect(route('admin.dashboard', absolute: false));
+            $this->redirect(route('admin.dashboard', absolute: false), navigate: true);
             return;
         }
 
-        // Default redirect for other roles (guru, piket, siswa, etc.)
-        $this->redirectIntended(default: route('dashboard', absolute: false));
+        // JALUR 2: Jika dia Siswa (dicek apakah datanya ada di tabel students)
+        if ($user->student()->exists()) {
+            $this->redirect(route('student.dashboard', absolute: false), navigate: true);
+            return;
+        }
+
+        // JALUR 3: Default (Guru / Guru Piket) diarahkan ke halaman pelanggaran
+        $this->redirectIntended(default: url('teachers/violations'), navigate: true);
     }
 }; ?>
 
@@ -45,17 +55,16 @@ new #[Layout('components.layouts.auth')] class extends Component
     <x-auth-session-status class="mb-4 text-teal-600 bg-teal-50 p-3 rounded-lg text-sm" :status="session('status')" />
 
     <form wire:submit="login" class="space-y-6">
-        
-        <!-- Email -->
-        <x-ui.input 
-            wire:model="form.email" 
-            id="email" 
+
+        <x-ui.input
+            wire:model="form.email"
+            id="email"
             name="email"
-            type="email" 
-            label="Email" 
-            placeholder="nama@sekolah.sch.id" 
-            required 
-            autofocus 
+            type="email"
+            label="Email"
+            placeholder="nama@sekolah.sch.id"
+            required
+            autofocus
             autocomplete="username"
         >
             <x-slot:icon>
@@ -63,15 +72,14 @@ new #[Layout('components.layouts.auth')] class extends Component
             </x-slot:icon>
         </x-ui.input>
 
-        <!-- Password -->
-        <x-ui.input 
-            wire:model="form.password" 
-            id="password" 
+        <x-ui.input
+            wire:model="form.password"
+            id="password"
             name="password"
-            type="password" 
-            label="Password" 
-            placeholder="••••••••" 
-            required 
+            type="password"
+            label="Password"
+            placeholder="••••••••"
+            required
             autocomplete="current-password"
         >
             <x-slot:icon>
@@ -79,7 +87,6 @@ new #[Layout('components.layouts.auth')] class extends Component
             </x-slot:icon>
         </x-ui.input>
 
-        <!-- Remember & Forgot -->
         <div class="flex items-center justify-between">
             <label for="remember" class="flex items-center cursor-pointer group">
                 <div class="relative flex items-center">
@@ -98,7 +105,6 @@ new #[Layout('components.layouts.auth')] class extends Component
             @endif
         </div>
 
-        <!-- Submit Button -->
         <div class="pt-2">
             <x-ui.button type="submit" variant="primary" class="w-full relative" iconPosition="right">
                 <span wire:loading.remove wire:target="login">Masuk</span>
@@ -122,7 +128,6 @@ new #[Layout('components.layouts.auth')] class extends Component
             </div>
         </div>
 
-        <!-- Social Login Placeholder -->
         <div>
             <x-ui.button type="button" variant="outline" class="w-full bg-white text-slate-700 border-slate-300 hover:bg-slate-50 focus:ring-slate-500" iconPosition="left">
                 <x-slot:icon>
@@ -134,7 +139,7 @@ new #[Layout('components.layouts.auth')] class extends Component
 
         <div class="text-center pt-4">
             <p class="text-sm text-slate-600">
-                Belum punya akun? 
+                Belum punya akun?
                 <a href="{{ route('register') }}" wire:navigate class="font-medium text-teal-600 hover:text-teal-800 transition-colors">Daftar sekarang</a>
             </p>
         </div>

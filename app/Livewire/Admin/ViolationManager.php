@@ -8,20 +8,19 @@ use App\Models\Student;
 use App\Models\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\WithFileUploads;
-use Illuminate\Support\Facades\Storage;
-
 use Livewire\WithPagination;
 use Livewire\Attributes\On;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth; // <-- Import Facade Auth Resmi
+use Carbon\Carbon;
 
 #[Layout('layouts.app')]
-
 class ViolationManager extends Component
 {
     use WithFileUploads, WithPagination;
 
-    // FORM
+    // FORM PROPERTIES
     public $showForm = false;
-
     public $student_id;
     public $rule_id;
     public $notes;
@@ -29,16 +28,21 @@ class ViolationManager extends Component
     public $violationId;
     public $isEdit = false;
 
-    // SEARCH & FILTERS
+    // SEARCH & ADVANCED FILTERS
     public $search = '';
+    public $filterLevel = '';
+    public $filterStatus = '';
+    public $filterRule = '';
+
+    // DATE FILTERS
     public $filterDay;
     public $filterWeek;
     public $filterMonth;
     public $filterYear;
 
-    // DETAIL MODAL
+    // DETAIL MODAL PROPERTIES
     public $selectedViolation = null;
-    public $showDetailModal = false;
+    public $isOpenModal = false;
 
     protected $rules = [
         'student_id' => 'required|exists:students,id',
@@ -54,16 +58,16 @@ class ViolationManager extends Component
         'evidence.max' => 'Ukuran gambar maksimal 2MB',
     ];
 
-    public function updatedSearch()
-    {
-        $this->resetPage();
-    }
-
+    // RESET PAGINATION ON FILTER CHANGED
+    public function updatedSearch() { $this->resetPage(); }
+    public function updatedFilterLevel() { $this->resetPage(); }
+    public function updatedFilterStatus() { $this->resetPage(); }
+    public function updatedFilterRule() { $this->resetPage(); }
     public function updatedFilterDay() { $this->resetPage(); }
     public function updatedFilterWeek() { $this->resetPage(); }
     public function updatedFilterMonth() { $this->resetPage(); }
     public function updatedFilterYear() { $this->resetPage(); }
-    
+
     public function updatedEvidence()
     {
         try {
@@ -76,7 +80,7 @@ class ViolationManager extends Component
 
     /*
     |--------------------------------------------------------------------------
-    | SAVE
+    | SAVE & EDIT LOGIC (WITH 24-HOUR LOCK)
     |--------------------------------------------------------------------------
     */
 
@@ -84,8 +88,9 @@ class ViolationManager extends Component
     {
         $violation = Violation::findOrFail($id);
 
+        // PROTEKSI 24 JAM (Hanya bisa dihapus jika lewat 24 jam)
         if ($violation->created_at->diffInHours(now()) >= 24) {
-            $this->dispatch('error', message: 'Data tidak dapat diedit setelah 24 jam.');
+            $this->dispatch('error', message: '🔒 Batas waktu edit (24 jam) sudah lewat. Data hanya bisa dihapus.');
             return;
         }
 
@@ -138,7 +143,7 @@ class ViolationManager extends Component
             Violation::create([
                 'student_id' => $this->student_id,
                 'rule_id' => $this->rule_id,
-                'reported_by' => auth()->id(),
+                'reported_by' => Auth::id(), // <-- Diubah menggunakan Facade Auth statis
                 'notes' => $this->notes,
                 'evidence' => $evidencePath,
                 'status' => 'pending',
@@ -153,43 +158,52 @@ class ViolationManager extends Component
     public function resetForm()
     {
         $this->reset([
-            'student_id',
-            'rule_id',
-            'notes',
-            'evidence',
-            'violationId',
-            'isEdit',
-            'showForm'
+            'student_id', 'rule_id', 'notes', 'evidence', 'violationId', 'isEdit', 'showForm'
         ]);
     }
 
     /*
     |--------------------------------------------------------------------------
-    | DETAIL
+    | VERIFICATION LOGIC
+    |--------------------------------------------------------------------------
+    */
+    public function verify($id)
+    {
+        $violation = Violation::findOrFail($id);
+
+        $violation->update([
+            'status' => 'diverifikasi',
+            'verified_by' => Auth::id() // <-- Diubah menggunakan Facade Auth statis
+        ]);
+
+        $this->closeModal();
+        $this->dispatch('success', message: 'Laporan pelanggaran berhasil diverifikasi!');
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | DETAIL MODAL CONTROLLER
     |--------------------------------------------------------------------------
     */
 
-    public function showDetail($id)
+    public function openDetailModal($id)
     {
         $this->selectedViolation = Violation::with([
-            'student',
-            'rule',
-            'reporter',
-            'verifier'
+            'student', 'rule', 'reporter', 'verifier'
         ])->findOrFail($id);
 
-        $this->showDetailModal = true;
+        $this->isOpenModal = true;
     }
 
     public function closeModal()
     {
-        $this->showDetailModal = false;
+        $this->isOpenModal = false;
         $this->selectedViolation = null;
     }
 
     /*
     |--------------------------------------------------------------------------
-    | DELETE
+    | DELETE LOGIC
     |--------------------------------------------------------------------------
     */
 
@@ -211,38 +225,40 @@ class ViolationManager extends Component
 
     /*
     |--------------------------------------------------------------------------
-    | RENDER
+    | RENDER ENGINE
     |--------------------------------------------------------------------------
     */
 
     public function render()
     {
         $students = Student::orderBy('name')->get();
-
         $rules = Rule::orderBy('name')->get();
 
-        $violations = Violation::with([
-            'student',
-            'rule',
-            'reporter',
-            'verifier'
-        ])
+        $violations = Violation::with(['student', 'rule', 'reporter', 'verifier'])
             ->when($this->search, function ($query) {
                 $query->whereHas('student', function ($q) {
-                    $q->where(
-                        'name',
-                        'like',
-                        '%' . $this->search . '%'
-                    );
+                    $q->where('name', 'like', '%' . $this->search . '%')
+                      ->orWhere('nis', 'like', '%' . $this->search . '%');
                 });
+            })
+            ->when($this->filterLevel, function ($query) {
+                $query->whereHas('rule', function ($q) {
+                    $q->where('level', $this->filterLevel);
+                });
+            })
+            ->when($this->filterStatus, function ($query) {
+                $query->where('status', $this->filterStatus);
+            })
+            ->when($this->filterRule, function ($query) {
+                $query->where('rule_id', $this->filterRule);
             })
             ->when($this->filterDay, function ($query) {
                 $query->whereDate('created_at', $this->filterDay);
             })
             ->when($this->filterWeek, function ($query) {
                 $query->whereBetween('created_at', [
-                    \Carbon\Carbon::parse($this->filterWeek)->startOfWeek(),
-                    \Carbon\Carbon::parse($this->filterWeek)->endOfWeek()
+                    Carbon::parse($this->filterWeek)->startOfWeek(),
+                    Carbon::parse($this->filterWeek)->endOfWeek()
                 ]);
             })
             ->when($this->filterMonth, function ($query) {
@@ -254,13 +270,10 @@ class ViolationManager extends Component
             ->latest()
             ->paginate(10);
 
-        return view(
-            'livewire.admin.violation-manager',
-            [
-                'students' => $students,
-                'rules' => $rules,
-                'violations' => $violations
-            ]
-        );
+        return view('livewire.admin.violation-manager', [
+            'students'   => $students,
+            'rules'      => $rules,
+            'violations' => $violations
+        ]);
     }
 }

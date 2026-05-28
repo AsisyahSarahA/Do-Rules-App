@@ -15,13 +15,27 @@ class VerifyEmailController extends Controller
     public function __invoke(EmailVerificationRequest $request): RedirectResponse
     {
         if ($request->user()->hasVerifiedEmail()) {
-            return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
+            return $this->getRedirectUrl($request->user());
         }
 
         if ($request->user()->markEmailAsVerified()) {
             event(new Verified($request->user()));
         }
 
-        return redirect()->intended(route('dashboard', absolute: false).'?verified=1');
+        return $this->getRedirectUrl($request->user());
+    }
+
+    /**
+     * Helper untuk menentukan arah redirect setelah verifikasi email
+     */
+    protected function getRedirectUrl($user): RedirectResponse
+    {
+        if ($user->student()->exists()) {
+            // Jalur redirect untuk siswa
+            return redirect()->intended(route('student.dashboard', absolute: false).'?verified=1');
+        }
+
+        // Jalur redirect untuk Guru / Admin
+        return redirect()->intended(url('teachers/violations').'?verified=1');
     }
 }

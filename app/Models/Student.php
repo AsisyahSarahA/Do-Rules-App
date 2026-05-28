@@ -7,12 +7,19 @@ use Illuminate\Database\Eloquent\Model;
 class Student extends Model
 {
     protected $fillable = [
+        'user_id', // Tambahkan ini
         'name',
         'nis',
         'class_id',
         'parent_id',
         'total_points'
     ];
+
+    // Relasi ke tabel Users
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function classRoom()
     {
@@ -28,7 +35,6 @@ class Student extends Model
     {
         return $this->hasMany(Violation::class);
     }
-    
 
     public function warningLetters()
     {
