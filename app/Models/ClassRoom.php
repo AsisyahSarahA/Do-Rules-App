@@ -15,9 +15,17 @@ class ClassRoom extends Model
         'school_year'
     ];
 
+    // public function students()
+    // {
+    //     return $this->hasMany(Student::class);
+    // }
+
+    // app/Models/ClassRoom.php
+
     public function students()
     {
-        return $this->hasMany(Student::class);
+        // Tambahkan 'class_id' (atau sesuaikan dengan nama kolom asli di tabel students kamu)
+        return $this->hasMany(Student::class, 'class_id');
     }
 
     public function wali_kelas()
@@ -25,4 +33,3 @@ class ClassRoom extends Model
         return $this->belongsTo(User::class, 'wali_kelas_id')->withDefault();
     }
 }
-

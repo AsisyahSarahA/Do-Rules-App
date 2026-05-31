@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Models\ClassRoom;
 
 class User extends Authenticatable
 {
@@ -20,6 +21,7 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
 
     /**
      * RELASI BARU: Menghubungkan User ke data Siswa
@@ -42,6 +44,48 @@ class User extends Authenticatable
         return $this->dutySchedules()
             ->whereDate('duty_date', today())
             ->exists();
+    }
+
+    /**
+     * Cek apakah user adalah Kesiswaan
+     */
+    public function isKesiswaan(): bool
+    {
+        return $this->role === 'kesiswaan';
+    }
+
+    /**
+     * Cek apakah user adalah BK
+     */
+    public function isBk(): bool
+    {
+        return $this->role === 'bk';
+    }
+
+
+    /**
+     * Cek apakah user adalah Wali Kelas
+     * (Memeriksa apakah guru ini punya relasi ke tabel kelas)
+     */
+    public function isWaliKelas(): bool
+    {
+        // Asumsi kamu punya tabel/model 'Classroom' dan relasi 'classroom' di model User
+        // Jika tidak pakai relasi, bisa disesuaikan nanti
+        return $this->classroom()->exists();
+    }
+    // Tambahkan relasi ini di dalam class User
+    public function teacher()
+    {
+        return $this->hasOne(Teacher::class, 'user_id');
+    }
+
+    /**
+     * RELASI: Menghubungkan Guru dengan Kelas yang dipimpinnya (Wali Kelas)
+     */
+    public function classroom()
+    {
+        // Sesuaikan 'wali_kelas_id' dengan nama kolom foreign key di tabel kelasmu
+        return $this->hasOne(ClassRoom::class, 'wali_kelas_id');
     }
 
     /**

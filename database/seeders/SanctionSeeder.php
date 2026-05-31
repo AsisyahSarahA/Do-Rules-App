@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\Sanction;
+use App\Models\Violation;
 
 class SanctionSeeder extends Seeder
 {
@@ -13,34 +13,23 @@ class SanctionSeeder extends Seeder
      */
     public function run(): void
     {
-        Sanction::truncate(); // biar ga double data
+        // Ambil pelanggaran yang berstatus pending/terverifikasi untuk dipasangkan sanksi
+        $violations = Violation::take(3)->get();
 
-        Sanction::insert([
-            [
-                'min_point' => 0,
-                'max_point' => 29,
-                'action' => 'aman'
-            ],
-            [
-                'min_point' => 30,
-                'max_point' => 49,
-                'action' => 'konseling'
-            ],
-            [
-                'min_point' => 50,
-                'max_point' => 74,
-                'action' => 'SP1'
-            ],
-            [
-                'min_point' => 75,
-                'max_point' => 99,
-                'action' => 'SP2'
-            ],
-            [
-                'min_point' => 100,
-                'max_point' => 999,
-                'action' => 'SP3'
-            ],
-        ]);
+        $mockActions = [
+            'Membersihkan kaca jendela kelas dan membuang sampah.',
+            'Membaca kitab suci di perpustakaan selama 30 menit.',
+            'Merapikan barisan sepatu siswa di depan koridor masjid sekolah.'
+        ];
+
+        foreach ($violations as $index => $violation) {
+            Sanction::create([
+                'violation_id' => $violation->id,
+                'action'       => $mockActions[$index] ?? 'Melakukan bakti sosial lingkungan sekolah.',
+                'status'       => 'pending',
+                'evidence_path'=> null,
+                'notes'        => null,
+            ]);
+        }
     }
 }

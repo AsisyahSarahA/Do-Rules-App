@@ -11,6 +11,9 @@ use App\Livewire\Admin\RuleManager;
 use App\Livewire\Admin\VerifyViolations;
 use App\Livewire\Admin\ViolationManager;
 use App\Livewire\Admin\ManageDutySchedules;
+use App\Livewire\WaliKelas\MyClassViolations;
+use App\Livewire\Teacher\ManageSanction;
+
 
 Route::view('/', 'welcome');
 
@@ -33,6 +36,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/students', ManageStudents::class)->name('students');
             Route::get('/teachers', ManageTeachers::class)->name('teachers');
             Route::get('/parents', ManageParents::class)->name('parents');
+            Route::get('/my-class', MyClassViolations::class)->name('my-class');
 
             // Khusus Admin langsung ke halaman admin
             Route::get('/violations', ViolationManager::class)->name('violations');
@@ -59,6 +63,36 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->name('siswa.')
         ->group(function () {
             // Route::get('/my-violations', MyViolations::class)->name('violations');
+        });
+
+
+    // | 4. KESISWAAN ROUTES
+    Route::middleware(['role:kesiswaan'])
+        ->prefix('kesiswaan')
+        ->name('kesiswaan.')
+        ->group(function () {
+            // Halaman dashboard kesiswaan untuk melihat & menangani kasus 'sedang'
+            // Route::get('/dashboard', KesiswaanDashboard::class)->name('dashboard');
+        });
+
+    // | 5. BIMBINGAN KONSELING (BK) ROUTES
+    Route::middleware(['role:bk'])
+        ->prefix('bk')
+        ->name('bk.')
+        ->group(function () {
+            // Halaman BK untuk melihat kasus berat & cetak Surat Peringatan (SP)
+            // Route::get('/dashboard', BkDashboard::class)->name('dashboard');
+        });
+
+    // | 6. WALI KELAS ROUTES
+    Route::middleware(['role:wali_kelas'])
+        ->prefix('walikelas')
+        ->name('walikelas.')
+        ->group(function () {
+            // Halaman Wali Kelas untuk memantau grafik poin khusus kelasnya sendiri
+            Route::get('/my-class', MyClassViolations::class)->name('my-class');
+            Route::get('/violations', ViolationManager::class)->name('violations');
+            Route::get('/sanctions', ManageSanction::class)->name('sanctions');
         });
 });
 

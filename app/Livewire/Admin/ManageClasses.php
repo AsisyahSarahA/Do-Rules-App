@@ -98,8 +98,8 @@ class ManageClasses extends Component
             ->latest()
             ->paginate(10);
 
-        $teachers = User::where('role', 'wali_kelas')->get();
-        // atau Teacher::all() kalau pakai tabel teachers
+        // Ditambahkan dengan Eager Loading .with('teacher') agar bisa memanggil NIP di blade
+        $teachers = User::where('role', 'wali_kelas')->with('teacher')->get();
 
         return view('livewire.admin.manage-classes', [
             'classes' => $classes,

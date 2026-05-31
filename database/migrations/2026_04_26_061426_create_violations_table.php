@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('evidence')->nullable(); // Kolom bukti langsung di sini
 
             // Status & Jejak Waktu
-            $table->enum('status', ['pending', 'diverifikasi', 'ditolak'])->default('pending');
+            $table->enum('status', ['pending', 'diverifikasi', 'prosess', 'ditolak'])->default('pending');
             $table->timestamp('verified_at')->nullable(); // Kolom waktu verifikasi langsung di sini
             $table->timestamps();
         });

@@ -17,6 +17,8 @@ class RoleMiddleware
      */
     public function handle(Request $request, Closure $next, ...$roles): Response
     {
+        $user = $request->user();
+
         // 1. Pastikan user sudah login
         if (!Auth::check()) {
             return redirect()->route('login');
@@ -24,8 +26,24 @@ class RoleMiddleware
 
         $user = Auth::user();
 
+
         // Buat array penampung role milik user
         $userRoles = [$user->role];
+
+        // 2. Optimasi: Hanya cek piket jika role aslinya adalah 'guru'
+        if ($user->role === 'guru' && method_exists($user, 'isPiketToday') && $user->isPiketToday()) {
+            $userRoles[] = 'piket';
+        }
+
+        // TAMBAHKAN INI: Cek otomatis jika dia adalah Wali Kelas
+        if ($user->role === 'guru' && method_exists($user, 'isWaliKelas') && $user->isWaliKelas()) {
+            $userRoles[] = 'wali_kelas';
+        }
+
+        // 3. Jika user memiliki salah satu dari role yang diizinkan di route
+        if (count(array_intersect($userRoles, $roles)) > 0) {
+            return $next($request);
+        }
 
         // 2. Optimasi: Hanya cek piket jika role aslinya adalah 'guru'
         // dan pastikan method isPiketToday() memang ada di model User

@@ -66,7 +66,7 @@ class ManageStudents extends Component
                 'name' => $this->name,
                 'email' => $this->email,
                 'password' => Hash::make($this->nis),
-                'role' => 'student', // <-- Sesuaikan dengan string role siswa di aplikasimu (misal: 'siswa' atau 'student')
+                'role' => 'siswa', // <-- Sesuaikan dengan string role siswa di aplikasimu (misal: 'siswa' atau 'student')
             ]);
 
             // 2. Hubungkan ID user baru ke data siswa

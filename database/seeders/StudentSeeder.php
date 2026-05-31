@@ -25,7 +25,7 @@ class StudentSeeder extends Seeder
             'name' => 'Echa Muhammad Roffy Yandi',
             'email' => 'echa@siswa.com', // Akun login Echa
             'password' => Hash::make('202402020'), // Password sesuai NIS
-            'role' => 'student' // <-- Tambahkan ini
+            'role' => 'siswa' // <-- Tambahkan ini
         ]);
 
         // 2. Buat Data Siswa Echa
@@ -45,7 +45,7 @@ class StudentSeeder extends Seeder
             'name' => 'M Ikhsan Hidayat',
             'email' => 'ikhsan@siswa.com', // Akun login Ikhsan
             'password' => Hash::make('202402021'), // Password sesuai NIS
-            'role' => 'student'// <-- Tambahkan ini
+            'role' => 'siswa'// <-- Tambahkan ini
         ]);
 
         // 2. Buat Data Siswa Ikhsan

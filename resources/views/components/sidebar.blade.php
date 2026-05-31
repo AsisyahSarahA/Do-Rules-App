@@ -27,8 +27,10 @@
         $user = auth()->user();
         $roleName = $user->role ?? 'guest';
 
-        // Custom display untuk guru yang sedang dapat tugas piket hari ini
-        if ($roleName === 'guru' && $user->isPiketToday()) {
+        // Penyesuaian tampilan nama role di bagian bawah sidebar
+        if ($roleName === 'wali_kelas') {
+            $roleName = 'Wali Kelas';
+        } elseif ($roleName === 'guru' && $user->isPiketToday()) {
             $roleName = 'Guru / Piket';
         }
     @endphp
@@ -57,6 +59,56 @@
                         </svg>
                         <span>Dashboard</span>
                     </div>
+                </a>
+            </div>
+            @endif
+
+            @if($user->hasRole('wali_kelas'))
+            <div class="relative group">
+                <div class="absolute -left-4 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-donezo-primary rounded-r-md
+                    {{ request()->routeIs('walikelas.my-class') ? 'block' : 'hidden' }}">
+                </div>
+                <a href="{{ route('walikelas.my-class') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg
+                    {{ request()->routeIs('walikelas.my-class')
+                        ? 'text-donezo-text font-bold bg-gray-50'
+                        : 'text-gray-500 font-medium hover:text-donezo-text hover:bg-gray-50'
+                    }} transition-colors">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5 {{ request()->routeIs('walikelas.my-class') ? 'text-donezo-primary' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <span>Kelas Saya</span>
+                    </div>
+                </a>
+            </div>
+
+            <div class="relative group">
+                <div class="absolute -left-4 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-donezo-primary rounded-r-md
+                    {{ request()->routeIs('walikelas.sanctions') ? 'block' : 'hidden' }}">
+                </div>
+                <a href="{{ route('walikelas.sanctions') }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg
+                    {{ request()->routeIs('walikelas.sanctions')
+                        ? 'text-donezo-text font-bold bg-gray-50'
+                        : 'text-gray-500 font-medium hover:text-donezo-text hover:bg-gray-50'
+                    }} transition-colors">
+                    <div class="flex items-center gap-3">
+                        <svg class="w-5 h-5 {{ request()->routeIs('walikelas.sanctions') ? 'text-donezo-primary' : 'text-gray-400' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path>
+                        </svg>
+                        <span>Sanksi Siswa</span>
+                    </div>
+
+                    @php
+                        $pendingSanctionsCount = \App\Models\Sanction::where('status', 'pending')
+                            ->whereHas('violation.student.classroom', function($q) use ($user) {
+                                $q->where('wali_kelas_id', $user->id);
+                            })->count();
+                    @endphp
+                    @if($pendingSanctionsCount > 0)
+                    <span class="bg-amber-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md animate-pulse">
+                        {{ $pendingSanctionsCount }}
+                    </span>
+                    @endif
                 </a>
             </div>
             @endif
@@ -90,11 +142,11 @@
             </div>
             @endif
 
-            @if($user->hasRole('admin,guru'))
+            @if($user->hasRole('admin') || $user->hasRole('guru') || $user->hasRole('wali_kelas'))
             <div class="relative group">
                 @php
-                    $isViolationRoute = request()->routeIs('admin.violations') || request()->routeIs('teacher.violations');
-                    $violationTargetRoute = $user->hasRole('admin') ? route('admin.violations') : route('teacher.violations');
+                    $isViolationRoute = request()->routeIs('admin.violations') || request()->routeIs('walikelas.violations');
+                    $violationTargetRoute = $user->hasRole('admin') ? route('admin.violations') : route('walikelas.violations');
                 @endphp
                 <div class="absolute -left-4 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-donezo-primary rounded-r-md {{ $isViolationRoute ? 'block' : 'hidden' }}"></div>
                 <a href="{{ $violationTargetRoute }}" class="flex items-center justify-between px-3 py-2.5 rounded-lg {{ $isViolationRoute ? 'text-donezo-text font-bold bg-gray-50' : 'text-gray-500 font-medium hover:text-donezo-text hover:bg-gray-50' }} transition-colors">
@@ -108,7 +160,7 @@
             </div>
             @endif
 
-            @if($user->hasRole('admin,piket'))
+            @if($user->hasRole('admin') || $user->hasRole('piket'))
             <div class="relative group">
                 @php
                     $isVerifyRoute = request()->routeIs('admin.verify-violations') || request()->routeIs('teacher.verify-violations');

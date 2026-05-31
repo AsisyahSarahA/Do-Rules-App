@@ -7,11 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class Sanction extends Model
 {
     protected $fillable = [
-        'min_point',
-        'max_point',
-        'action'
+        'violation_id',
+        'action',
+        'evidence_path',
+        'status',
+        'notes',
+        'completed_at'
     ];
 
+    // Relasi balik ke Pelanggaran
     public function violation()
     {
         return $this->belongsTo(Violation::class);

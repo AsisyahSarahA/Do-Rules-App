@@ -21,8 +21,10 @@ class Teacher extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+
+
     public function classes()
     {
-        return $this->hasMany(ClassRoom::class, 'wali_kelas_id');
+        return $this->hasMany(ClassRoom::class, 'wali_kelas_id', 'user_id');
     }
 }
