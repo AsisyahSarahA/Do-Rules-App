@@ -13,21 +13,31 @@ class TeacherSeeder extends Seeder
     {
         $teachersData = [
             [
+                // 'id' => 2,
                 'name' => 'Cecep Riki',
-                'email' => 'cecep@guru.com',
+                'email' => 'ceri@mail.com',
                 'nip' => 198501012010011001,
                 'role' => 'guru',
             ],
             [
+                // 'id' => 4,
                 'name' => 'Nabila Azzahra',
-                'email' => 'nabila@guru.com',
+                'email' => 'nabila@mail.com',
                 'nip' => 198903152015022002,
                 'role' => 'piket',
             ],
             [
+                // 'id' => 3,
                 'name' => 'Muhammad Aripin',
-                'email' => 'aripin@guru.com',
+                'email' => 'aripin@mail.com',
                 'nip' => 199208042019032004,
+                'role' => 'wali_kelas',
+            ],
+            [
+                // 'id' => 5,
+                'name' => 'Pratiwi Agustin',
+                'email' => 'pratiwi@mail.com',
+                'nip' => 1234567890,
                 'role' => 'wali_kelas',
             ],
 
@@ -54,3 +64,4 @@ class TeacherSeeder extends Seeder
         }
     }
 }
+ 

@@ -12,7 +12,7 @@
         </div>
 
         <button wire:click="{{ $showForm ? 'resetForm' : '$set(\'showForm\', true)' }}"
-            class="{{ $showForm ? 'bg-slate-200 text-slate-600' : 'bg-teal-500 text-white' }} px-6 py-3 rounded-2xl font-bold shadow-lg transition-all">
+            class="{{ $showForm ? 'bg-slate-200 text-slate-600' : 'bg-teal-500 text-white' }} px-6 py-3 rounded-2xl font-bold shadow-lg shadow-teal-500/10 transition-all">
             {{ $showForm ? 'Tutup Form' : '+ Laporkan Pelanggaran' }}
         </button>
     </div>
@@ -102,7 +102,7 @@
         {{-- TABLE RIWAYAT --}}
         <div class="{{ $showForm ? 'lg:col-span-8' : 'lg:col-span-12' }}">
             <div class="bg-white rounded-[2rem] shadow-sm border border-gray-100 overflow-hidden">
-                
+
                 {{-- FILTERS --}}
                 <div class="p-6 border-b border-gray-100 flex flex-wrap items-center gap-4 bg-gray-50/50">
                     <div class="flex-1 min-w-[200px]">
@@ -146,7 +146,7 @@
                             @forelse($violations as $violation)
                             <tr wire:key="violation-{{ $violation->id }}" wire:click="openDetailModal({{ $violation->id }})"
                                 class="hover:bg-gray-50/80 cursor-pointer transition-all group">
-                                
+
                                 <td class="px-8 py-5">
                                     <div class="flex items-center gap-3">
                                         <div class="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold text-xs transition-all group-hover:bg-teal-500 group-hover:text-white">
@@ -173,11 +173,9 @@
                                 </td>
 
                                 <td class="px-8 py-5">
-                                    <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border
-                                        {{ $violation->status == 'diverifikasi' || $violation->status == 'approved'
-                                            ? 'bg-emerald-50 text-emerald-600 border-emerald-100' 
-                                            : 'bg-amber-50 text-amber-600 border-amber-100' }}">
-                                        {{ $violation->status }}
+                                    {{-- INTEGRASI ENUM: Menggunakan ->color() dan ->label() --}}
+                                    <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border {{ $violation->status->color() }}">
+                                        {{ $violation->status->label() }}
                                     </span>
                                 </td>
 
@@ -189,8 +187,8 @@
                                 </td>
 
                                 <td class="px-8 py-5 text-center flex items-center justify-center gap-2" @click.stop>
-                                    {{-- Edit Trigger (Hanya jika status pending & < 24 Jam) --}}
-                                    @if($violation->status === 'pending' && $violation->created_at->diffInHours(now()) < 24)
+                                    {{-- INTEGRASI ENUM: Deteksi status lewat value string Enum --}}
+                                    @if($violation->status->value === 'pending' && $violation->created_at->diffInHours(now()) < 24)
                                     <button wire:click="edit({{ $violation->id }})" class="p-2.5 text-blue-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all" title="Edit Data">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -229,14 +227,14 @@
     {{-- MODAL DETAIL --}}
     <div x-data="{ show: @entangle('isOpenModal').live }" x-show="show" x-cloak
         class="fixed inset-0 z-[999] flex items-center justify-center p-4 sm:p-6">
-        
+
         <div x-show="show" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0"
             class="absolute inset-0 bg-slate-900/40 backdrop-blur-md" @click="show = false; $wire.closeModal()"></div>
 
         <div class="bg-white rounded-[2.5rem] w-full max-w-4xl overflow-hidden relative shadow-[0_32px_64px_-15px_rgba(0,0,0,0.3)] border border-white/20" @click.stop>
             @if($selectedViolation)
             <div class="flex flex-col lg:flex-row h-full max-h-[90vh]">
-                
+
                 {{-- Left side: Evidence --}}
                 <div class="lg:w-1/2 bg-slate-900 flex items-center justify-center overflow-hidden border-b lg:border-b-0 lg:border-r border-gray-100 relative group/img">
                     @if($selectedViolation->evidence)
@@ -295,12 +293,15 @@
 
                         <div class="grid grid-cols-2 gap-4 border-t pt-4 text-xs">
                             <div>
-                                <p class="text-gray-400 font-medium">Status Verifikasi</p>
-                                <span class="font-bold uppercase text-teal-600">{{ $selectedViolation->status }}</span>
+                                <p class="text-gray-400 font-medium mb-1">Status Verifikasi</p>
+                                {{-- INTEGRASI ENUM --}}
+                                <span class="px-2.5 py-1 text-[10px] font-bold uppercase border rounded-md inline-block {{ $selectedViolation->status->color() }}">
+                                    {{ $selectedViolation->status->label() }}
+                                </span>
                             </div>
                             <div>
                                 <p class="text-gray-400 font-medium">Diverifikasi Oleh</p>
-                                <span class="font-bold text-slate-700">{{ $selectedViolation->verifier->name ?? 'Belum Diverifikasi' }}</span>
+                                <span class="font-bold text-slate-700 block mt-1">{{ $selectedViolation->verifier->name ?? 'Belum Diverifikasi' }}</span>
                             </div>
                         </div>
                     </div>

@@ -13,7 +13,8 @@ use App\Livewire\Admin\ViolationManager;
 use App\Livewire\Admin\ManageDutySchedules;
 use App\Livewire\WaliKelas\MyClassViolations;
 use App\Livewire\Teacher\ManageSanction;
-
+use App\Livewire\WaliKelas\RiwayatPelanggaran;
+use App\Livewire\WaliKelas\CreateViolation;
 
 Route::view('/', 'welcome');
 
@@ -37,23 +38,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
             Route::get('/teachers', ManageTeachers::class)->name('teachers');
             Route::get('/parents', ManageParents::class)->name('parents');
             Route::get('/my-class', MyClassViolations::class)->name('my-class');
-
-            // Khusus Admin langsung ke halaman admin
-            Route::get('/violations', ViolationManager::class)->name('violations');
+            Route::get('/violations', ViolationManager::class)->name('violations'); // Rekap Admin
             Route::get('/verify-violations', VerifyViolations::class)->name('verify-violations');
         });
 
-    // | 2. GURU / PIKET / ADMIN (Akses Berdasarkan Tugas)
-    Route::middleware(['role:admin,guru,piket'])
+    // | 2. GURU / PIKET (Akses Berdasarkan Tugas)
+    Route::middleware(['role:guru,piket'])
         ->prefix('teacher')
         ->name('teacher.')
         ->group(function () {
-            // Semua guru bisa input pelanggaran
-            Route::get('/violations', ViolationManager::class)->name('violations');
+            // Guru biasa diarahkan ke Form Input Laporan Baru
+            Route::get('/violations', CreateViolation::class)->name('violations');
 
-            // Hanya Admin atau Guru yang HARI INI PIKET yang bisa lolos ke halaman verifikasi ini
+            // Hanya Guru Piket yang bisa verifikasi
             Route::get('/verify-violations', VerifyViolations::class)
-                ->middleware('role:admin,piket')
+                ->middleware('role:piket')
                 ->name('verify-violations');
         });
 
@@ -65,13 +64,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
             // Route::get('/my-violations', MyViolations::class)->name('violations');
         });
 
-
     // | 4. KESISWAAN ROUTES
     Route::middleware(['role:kesiswaan'])
         ->prefix('kesiswaan')
         ->name('kesiswaan.')
         ->group(function () {
-            // Halaman dashboard kesiswaan untuk melihat & menangani kasus 'sedang'
             // Route::get('/dashboard', KesiswaanDashboard::class)->name('dashboard');
         });
 
@@ -80,7 +77,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->prefix('bk')
         ->name('bk.')
         ->group(function () {
-            // Halaman BK untuk melihat kasus berat & cetak Surat Peringatan (SP)
             // Route::get('/dashboard', BkDashboard::class)->name('dashboard');
         });
 
@@ -89,11 +85,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->prefix('walikelas')
         ->name('walikelas.')
         ->group(function () {
-            // Halaman Wali Kelas untuk memantau grafik poin khusus kelasnya sendiri
             Route::get('/my-class', MyClassViolations::class)->name('my-class');
-            Route::get('/violations', ViolationManager::class)->name('violations');
             Route::get('/sanctions', ManageSanction::class)->name('sanctions');
+            // Form Input Laporan Baru khusus Wali Kelas
+            Route::get('/violations', CreateViolation::class)->name('violations');
         });
+
+    // | 7. ROUTE BERSAMA (Bisa diakses Wali Kelas & Guru)
+    Route::middleware(['role:wali_kelas,guru'])
+        ->get('/walikelas/riwayat-pelanggaran', RiwayatPelanggaran::class)
+        ->name('walikelas.riwayat-pelanggaran');
 });
 
 require __DIR__ . '/auth.php';

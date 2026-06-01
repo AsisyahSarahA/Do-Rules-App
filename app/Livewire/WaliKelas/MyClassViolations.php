@@ -44,6 +44,7 @@ class MyClassViolations extends Component
             }])
             ->paginate(10);
 
+            
         // 3. Ambil 5 riwayat pelanggaran terbaru + panggil relasi 'rule' agar namanya bisa muncul di blade
         $recentViolations = Violation::whereHas('student', function ($query) use ($classroom) {
             $query->where('class_id', $classroom->id);
@@ -53,7 +54,7 @@ class MyClassViolations extends Component
         ->take(5)
         ->get();
 
-        return view('livewire.wali-kelas.my-class-violations', [
+        return view('livewire.walikelas.my-class-violations', [
             'classroom'        => $classroom,
             'students'         => $students,
             'recentViolations' => $recentViolations

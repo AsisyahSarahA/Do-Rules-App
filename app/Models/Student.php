@@ -21,7 +21,7 @@ class Student extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function classRoom()
+    public function classroom()
     {
         return $this->belongsTo(ClassRoom::class, 'class_id');
     }

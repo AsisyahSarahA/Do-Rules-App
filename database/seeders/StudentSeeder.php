@@ -25,6 +25,7 @@ class StudentSeeder extends Seeder
             'name' => 'Echa Muhammad Roffy Yandi',
             'email' => 'echa@siswa.com', // Akun login Echa
             'password' => Hash::make('202402020'), // Password sesuai NIS
+            // 'class_id' => 1, // Set class_id langsung
             'role' => 'siswa' // <-- Tambahkan ini
         ]);
 
@@ -53,7 +54,25 @@ class StudentSeeder extends Seeder
             'user_id' => $user2->id,
             'name' => 'M Ikhsan Hidayat',
             'nis' => '202402021',
-            'class_id' => 1,
+            'class_id' => 2,
+            'parent_id' => $parent2?->id,
+            'total_points' => 0
+        ]);
+        // --- SISWA 3 ---
+        // 1. Buat User untuk Ikhsan
+        $user3 = User::create([
+            'name' => 'Lashira Adzkia rasyid',
+            'email' => 'lashira@mail.com', // Akun login Lashira
+            'password' => Hash::make('202402022'), // Password sesuai NIS
+            'role' => 'siswa'// <-- Tambahkan ini
+        ]);
+
+        // 2. Buat Data Siswa Ikhsan
+        Student::create([
+            'user_id' => $user3->id,
+            'name' => 'Lashira Adzkia rasyid',
+            'nis' => '202402022',
+            'class_id' => 2,
             'parent_id' => $parent2?->id,
             'total_points' => 0
         ]);

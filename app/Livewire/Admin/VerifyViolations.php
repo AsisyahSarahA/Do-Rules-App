@@ -4,7 +4,12 @@ namespace App\Livewire\Admin;
 
 use Livewire\Component;
 use App\Models\Violation;
+use App\Models\Rule;
+use App\Models\Sanction; // 👈 Daftarkan model Sanction
+use App\Enums\ViolationStatus;
+use App\Enums\SanctionStatus;   // 👈 Daftarkan enum SanctionStatus kamu
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Computed;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
 
@@ -13,76 +18,118 @@ class VerifyViolations extends Component
 {
     use WithPagination;
 
-    // 1. DEKLARASI PROPERTI MODAL (Ini yang tadinya hilang sehingga bikin error)
     public $isOpenModal = false;
-    public $selectedViolation = null;
+    public ?int $selectedViolationId = null;
 
-    /*
-    |--------------------------------------------------------------------------
-    | DETAIL MODAL CONTROLLER
-    |--------------------------------------------------------------------------
-    */
+    // Search & Filters
+    public $search = '';
+    public $filterLevel = '';
+    public $filterStatus = 'pending'; 
+    public $filterRule = '';
+
+    public function updatingSearch() { $this->resetPage(); }
+    public function updatingFilterLevel() { $this->resetPage(); }
+    public function updatingFilterStatus() { $this->resetPage(); }
+    public function updatingFilterRule() { $this->resetPage(); }
+
+    #[Computed]
+    public function selectedViolation()
+    {
+        if (!$this->selectedViolationId) return null;
+
+        return Violation::with(['student.classroom', 'rule', 'reporter', 'verifier'])
+            ->find($this->selectedViolationId);
+    }
+
     public function openDetailModal($id)
     {
-        $this->selectedViolation = Violation::with([
-            'student', 'rule', 'reporter'
-        ])->findOrFail($id);
-
+        $this->selectedViolationId = $id;
         $this->isOpenModal = true;
     }
 
     public function closeModal()
     {
         $this->isOpenModal = false;
-        $this->selectedViolation = null;
+        $this->selectedViolationId = null;
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | VERIFICATION LOGIC
-    |--------------------------------------------------------------------------
-    */
     public function verify($id)
     {
-        $violation = Violation::findOrFail($id);
+        try {
+            // Ambil data pelanggaran beserta aturan (rule) di dalamnya
+            $violation = Violation::with('rule')->findOrFail($id);
 
-        $violation->update([
-            'status' => 'diverifikasi',
-            'verified_by' => Auth::id() // Menggunakan Facade Auth anti-error
-        ]);
+            // 1. Update status pelanggaran di tabel 'violations'
+            $violation->update([
+                'status' => ViolationStatus::VERIFIED, 
+                'verified_by' => Auth::id(),
+                'verified_at' => now()
+            ]);
 
-        $this->closeModal();
-        $this->dispatch('success', message: 'Laporan pelanggaran berhasil diverifikasi!');
+            // 2. 🔥 JEMBATAN OTOMATIS: Membuat data sanksi baru untuk Wali Kelas
+            Sanction::create([
+                'violation_id' => $violation->id,
+                'status'       => SanctionStatus::PENDING, // 👈 Menggunakan Enum SanctionStatus kamu ('pending')
+                'action'       => 'Menjalani sanksi akibat melanggar aturan: ' . ($violation->rule->name ?? 'Tata Tertib'), 
+                'notes'        => 'Menunggu tindak lanjut dan unggah bukti dari Wali Kelas.',
+            ]);
+
+            $this->closeModal();
+            session()->flash('message', 'Laporan pelanggaran berhasil diverifikasi & sanksi otomatis diteruskan ke Wali Kelas!');
+        } catch (\Exception $e) {
+            $this->closeModal();
+            session()->flash('error', 'Gagal Verifikasi: ' . $e->getMessage());
+        }
     }
 
     public function reject($id)
     {
-        $violation = Violation::findOrFail($id);
+        try {
+            $violation = Violation::findOrFail($id);
 
-        $violation->update([
-            'status' => 'ditolak',
-            'verified_by' => Auth::id()
-        ]);
+            // Langsung menggunakan Enum baru yang berbahasa Indonesia
+            $violation->update([
+                'status' => ViolationStatus::REJECTED, 
+                'verified_by' => Auth::id(),
+                'verified_at' => now()
+            ]);
 
-        $this->closeModal();
-        $this->dispatch('success', message: 'Laporan pelanggaran telah ditolak.');
+            $this->closeModal();
+            session()->flash('message', 'Laporan pelanggaran telah ditolak.');
+        } catch (\Exception $e) {
+            $this->closeModal();
+            session()->flash('error', 'Gagal Menolak: ' . $e->getMessage());
+        }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | RENDER ENGINE
-    |--------------------------------------------------------------------------
-    */
     public function render()
     {
-        // Mengambil data pelanggaran yang berstatus 'pending' sesuai query database Anda
-        $pendingViolations = Violation::with(['student', 'rule', 'reporter'])
-            ->where('status', 'pending')
-            ->latest()
-            ->paginate(10);
+        $query = Violation::with(['student.classroom', 'rule', 'reporter', 'verifier']);
+
+        if ($this->filterStatus) {
+            $query->where('status', $this->filterStatus);
+        }
+
+        if ($this->search) {
+            $query->whereHas('student', function ($q) {
+                $q->where('name', 'like', '%' . $this->search . '%')
+                  ->orWhere('nis', 'like', '%' . $this->search . '%');
+            });
+        }
+
+        if ($this->filterLevel) {
+            $query->whereHas('rule', function ($q) {
+                $q->where('level', $this->filterLevel);
+            });
+        }
+
+        if ($this->filterRule) {
+            $query->where('rule_id', $this->filterRule);
+        }
 
         return view('livewire.admin.verify-violations', [
-            'violations' => $pendingViolations
+            'violations' => $query->latest()->paginate(10),
+            'rules' => Rule::orderBy('name', 'asc')->get()
         ]);
     }
 }

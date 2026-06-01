@@ -31,29 +31,25 @@
                                 <span class="block text-xs font-normal text-gray-400">Kelas {{ $sanction->violation->student->classroom->name ?? '-' }}</span>
                             </td>
                             <td class="px-6 py-4 text-gray-500">
-                                {{ $sanction->violation->rule->name ?? 'Pelanggaran Ringan' }}
+                                {{ $sanction->violation->rule->name ?? 'Pelanggaran' }}
                             </td>
                             <td class="px-6 py-4 text-gray-600 italic">
                                 "{{ $sanction->action }}"
                             </td>
                             <td class="px-6 py-4">
-                                @if($sanction->status === 'completed')
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
-                                        Selesai
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100 animate-pulse">
-                                        Butuh Bukti
-                                    </span>
-                                @endif
+                                {{-- INTEGRASI ENUM: Menampilkan warna dan nama status dinamis (Tertunda, Proses, Selesai) --}}
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border {{ $sanction->status->color() }} {{ $sanction->status->value === 'pending' ? 'animate-pulse' : '' }}">
+                                    {{ $sanction->status->label() }}
+                                </span>
                             </td>
                             <td class="px-6 py-4 text-right">
-                                @if($sanction->status === 'pending')
+                                {{-- INTEGRASI ENUM: Mengizinkan proses sanksi jika belum completed --}}
+                                @if($sanction->status->value !== 'completed')
                                     <button wire:click="openSanctionModal({{ $sanction->id }})" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-donezo-primary hover:bg-donezo-primary/90 text-white text-xs font-semibold rounded-lg transition-colors shadow-sm shadow-donezo-primary/10">
                                         Selesaikan
                                     </button>
                                 @else
-                                    <span class="text-xs text-gray-400 font-medium">Diverifikasi pada {{ $sanction->completed_at->format('d M Y') }}</span>
+                                    <span class="text-xs text-gray-400 font-medium">Diverifikasi pada {{ $sanction->completed_at ? $sanction->completed_at->format('d M Y') : '-' }}</span>
                                 @endif
                             </td>
                         </tr>
@@ -67,6 +63,7 @@
         </div>
     </div>
 
+    {{-- MODAL KAMERA REAL-TIME --}}
     @if($isModalOpen)
     <div class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
          x-data="{

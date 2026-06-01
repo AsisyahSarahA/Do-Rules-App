@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('violation_id')->constrained()->onDelete('cascade');
             $table->string('action'); // Deskripsi sanksi yang harus dilakukan
             $table->string('evidence_path')->nullable(); // Lokasi foto hasil kamera
-            $table->enum('status', ['pending', 'completed'])->default('pending');
+            // $table->enum('status', ['pending', 'completed'])->default('pending');
             $table->text('notes')->nullable(); // Catatan tambahan dari wali kelas
             $table->timestamp('completed_at')->nullable(); // Waktu penyelesaian sanksi
             $table->timestamps();

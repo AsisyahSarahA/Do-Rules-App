@@ -128,7 +128,7 @@ class ManageStudents extends Component
 
     public function render()
     {
-        $students = Student::with(['classRoom', 'parent', 'user'])
+        $students = Student::with(['classroom', 'parent', 'user'])
             ->when($this->search, function ($q) {
                 $q->where('name', 'like', '%' . $this->search . '%')
                     ->orWhere('nis', 'like', '%' . $this->search . '%');
